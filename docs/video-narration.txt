@@ -1,0 +1,45 @@
+Data developers need representative test data before a pipeline is ready.
+Today, they usually copy production rows and inherit privacy risk, or hand-write
+fixtures that quickly drift from schemas and relationships.
+
+FixtureForge offers a third path. It compiles the governed metadata already in
+DataHub into deterministic, merge-ready test assets, without reading production
+source rows.
+
+This demonstration uses a real local DataHub open-source instance. Three
+fictional retail datasets contain nineteen fields, primary and foreign keys,
+lineage, PII tags, and glossary terms.
+
+FixtureForge launches the official DataHub MCP Server over standard input and
+output. During collection, mutation is disabled. The allowlist contains only
+get entities, list schema fields, and get lineage. Seven calls are recorded and
+hashed. There is no source-row tool in this adapter, and the measured number of
+source rows read is zero.
+
+The normalized metadata is compiled in dependency order. PII fields receive
+clearly fictional semantic values, including example dot test email addresses.
+Foreign keys are selected from generated parents. Explicit test policies add
+reviewable enum and range boundaries.
+
+One run produces linked CSV fixtures, compressed Parquet, dbt schema tests,
+typed Python accessors, and a provenance manifest. A second independent run
+produces the same byte-level file inventory.
+
+FixtureForge does not trust its own output. DuckDB independently runs thirty-six
+checks over row counts, nullability, uniqueness, accepted values, numeric
+ranges, and relationships. All thirty-six pass.
+
+Then FixtureForge replaces one customer foreign key with a missing parent. The
+same verifier catches exactly one foreign-key violation. That negative control
+proves the green result is not a hard-coded success screen.
+
+Finally, a separate localhost-only command enables one approved MCP mutation.
+It writes the evidence fingerprint to the fictional DataHub dataset, reads the
+entity back, and reports success only after the fingerprint is found.
+
+FixtureForge is source-row-free, deterministic, Apache licensed, and designed
+for review. Source-row-free is a narrow claim. It is not anonymization, a
+privacy guarantee, or proof that metadata is correct.
+
+The result is simple: developers can build realistic, governed tests before
+production data is available or appropriate.
