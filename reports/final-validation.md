@@ -23,6 +23,7 @@ Verified run: 20260809-043312_live-e2e-v2
 - Core coverage: 96.93 percent
 - Ruff: passed
 - mypy strict mode: passed
+- Demo video draft: 2 minutes 26.84 seconds, 1920 by 1080, H.264 and AAC
 
 ## Scale check
 
@@ -52,6 +53,7 @@ These measurements are local evidence, not a production throughput claim.
 
 ## Remaining release gates
 
-The local product and evidence package are complete. Public repository creation,
-video recording and upload, public project URL, and final Devpost submission are
-external actions and remain intentionally unperformed until user authorization.
+The local product, evidence package, and video draft are complete. Public
+repository creation, video upload, public project URL, and final Devpost
+submission are external actions and remain intentionally unperformed until user
+authorization.

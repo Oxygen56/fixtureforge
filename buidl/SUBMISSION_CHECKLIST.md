@@ -8,14 +8,14 @@
 - [x] Secret and local-path scan completed
 - [x] Judging rubric mapping is documented
 - [x] Root Apache-2.0 license and third-party notices are present
-- [x] English submission copy and a sub-three-minute video script are ready
+- [x] English submission copy, storyboard, narration, and a 2:26 video draft are ready
 - [x] AI assistance disclosure is ready
 
 ## External release actions
 
 - [ ] Create and verify the public repository
 - [ ] Confirm GitHub About shows Apache-2.0
-- [ ] Record and upload the public no-login video
+- [ ] Review and upload the public no-login video
 - [ ] Add public repository, video, and test links to Devpost
 - [ ] Confirm team identity and any required AI disclosure fields
 - [ ] Submit before 10 August 2026 at 17:00 EDT
