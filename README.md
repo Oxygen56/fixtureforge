@@ -16,6 +16,8 @@ explicit test policies into:
 FixtureForge is a new Apache-2.0 project for the Build with DataHub hackathon,
 entered in Metadata-Aware Code Generation & Development.
 
+![FixtureForge verified evidence report](docs/assets/evidence-report.png)
+
 ## The problem
 
 Data developers need representative fixtures before a pipeline is ready. Copying
