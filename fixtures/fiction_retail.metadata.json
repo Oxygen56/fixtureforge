@@ -1,0 +1,220 @@
+{
+  "contract_version": "1.0",
+  "source": "datahub-oss:mcp-recording:fiction-retail",
+  "datasets": [
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)",
+      "name": "customers",
+      "description": "Fictional retail customer profiles.",
+      "rows": 12,
+      "fields": [
+        {
+          "name": "customer_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "Stable customer identifier.",
+          "tags": ["primary_key"],
+          "unique": true
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Customer display name.",
+          "tags": ["PII"],
+          "glossary_terms": ["person_name"]
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Customer email address.",
+          "tags": ["PII"],
+          "glossary_terms": ["email_address"],
+          "unique": true,
+          "format": "email"
+        },
+        {
+          "name": "phone",
+          "type": "VARCHAR",
+          "nullable": true,
+          "description": "Customer contact phone.",
+          "tags": ["PII"],
+          "glossary_terms": ["phone_number"]
+        },
+        {
+          "name": "signup_date",
+          "type": "DATE",
+          "nullable": false,
+          "description": "Date the customer registered.",
+          "format": "date"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "ISO-like customer country."
+        },
+        {
+          "name": "segment",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Commercial customer segment.",
+          "enum_values": ["consumer", "small_business", "enterprise"]
+        }
+      ],
+      "primary_key": ["customer_id"],
+      "assertions": [
+        {"kind": "not_null", "field": "customer_id"},
+        {"kind": "unique", "field": "email"},
+        {
+          "kind": "accepted_values",
+          "field": "segment",
+          "values": ["consumer", "small_business", "enterprise"]
+        }
+      ]
+    },
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)",
+      "name": "orders",
+      "description": "Fictional retail orders linked to customers.",
+      "rows": 18,
+      "fields": [
+        {
+          "name": "order_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "Stable order identifier.",
+          "tags": ["primary_key"],
+          "unique": true
+        },
+        {
+          "name": "customer_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "Customer placing the order.",
+          "tags": ["foreign_key"]
+        },
+        {
+          "name": "order_date",
+          "type": "DATE",
+          "nullable": false,
+          "description": "Date the order was placed.",
+          "format": "date"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Current lifecycle state.",
+          "enum_values": ["pending", "paid", "shipped", "delivered", "cancelled"]
+        },
+        {
+          "name": "amount",
+          "type": "DECIMAL(12,2)",
+          "nullable": false,
+          "description": "Gross order amount.",
+          "glossary_terms": ["gross_order_value"],
+          "minimum": 0,
+          "maximum": 10000
+        },
+        {
+          "name": "payment_method",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Payment rail.",
+          "enum_values": ["card", "bank_transfer", "wallet"]
+        },
+        {
+          "name": "shipping_country",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Destination country."
+        }
+      ],
+      "primary_key": ["order_id"],
+      "foreign_keys": [
+        {
+          "fields": ["customer_id"],
+          "references_table": "customers",
+          "references_fields": ["customer_id"]
+        }
+      ],
+      "assertions": [
+        {"kind": "not_null", "field": "customer_id"},
+        {"kind": "range", "field": "amount", "minimum": 0, "maximum": 10000}
+      ]
+    },
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)",
+      "name": "order_items",
+      "description": "Fictional line items linked to orders.",
+      "rows": 30,
+      "fields": [
+        {
+          "name": "order_item_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "Stable line item identifier.",
+          "tags": ["primary_key"],
+          "unique": true
+        },
+        {
+          "name": "order_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "description": "Parent order identifier.",
+          "tags": ["foreign_key"]
+        },
+        {
+          "name": "sku",
+          "type": "VARCHAR",
+          "nullable": false,
+          "description": "Fictional stock keeping unit."
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "nullable": false,
+          "description": "Units ordered.",
+          "minimum": 1,
+          "maximum": 10
+        },
+        {
+          "name": "unit_price",
+          "type": "DECIMAL(12,2)",
+          "nullable": false,
+          "description": "Price per unit.",
+          "minimum": 0.01,
+          "maximum": 2500
+        }
+      ],
+      "primary_key": ["order_item_id"],
+      "foreign_keys": [
+        {
+          "fields": ["order_id"],
+          "references_table": "orders",
+          "references_fields": ["order_id"]
+        }
+      ],
+      "assertions": [
+        {"kind": "range", "field": "quantity", "minimum": 1, "maximum": 10}
+      ]
+    }
+  ],
+  "lineage": [
+    {
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)",
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+    },
+    {
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)",
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+    }
+  ],
+  "adapter_evidence": {
+    "mode": "fixture",
+    "tool_allowlist": ["get_entities", "list_schema_fields", "get_lineage"],
+    "source_row_tools_called": []
+  }
+}

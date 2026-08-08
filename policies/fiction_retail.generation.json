@@ -1,0 +1,36 @@
+{
+  "policy_version": "1.0",
+  "purpose": "Explicit test-generation bounds not represented by the source schema.",
+  "datasets": {
+    "customers": {
+      "rows": 12,
+      "fields": {
+        "email": {"format": "email"},
+        "signup_date": {"format": "date"},
+        "segment": {
+          "enum_values": ["consumer", "small_business", "enterprise"]
+        }
+      }
+    },
+    "orders": {
+      "rows": 18,
+      "fields": {
+        "order_date": {"format": "date"},
+        "status": {
+          "enum_values": ["pending", "paid", "shipped", "delivered", "cancelled"]
+        },
+        "amount": {"minimum": 0, "maximum": 10000},
+        "payment_method": {
+          "enum_values": ["card", "bank_transfer", "wallet"]
+        }
+      }
+    },
+    "order_items": {
+      "rows": 30,
+      "fields": {
+        "quantity": {"minimum": 1, "maximum": 10},
+        "unit_price": {"minimum": 0.01, "maximum": 2500}
+      }
+    }
+  }
+}

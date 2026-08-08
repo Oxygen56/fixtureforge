@@ -1,0 +1,42 @@
+project:
+  slug: fixtureforge
+  name: FixtureForge
+  platform: devpost
+  url: https://datahub.devpost.com/
+  task_type: ai-agent-hackathon
+  owner: FixtureForge Contributors
+deadline:
+  official: 2026-08-10T17:00:00-04:00
+  utc: 2026-08-10T21:00:00Z
+  asia_shanghai: 2026-08-11T05:00:00+08:00
+track:
+  primary: Metadata-Aware Code Generation & Development
+  required_components:
+    - DataHub OSS
+    - Official DataHub MCP Server
+rubric:
+  technological_implementation: 20
+  design: 20
+  potential_impact: 20
+  quality_of_idea: 20
+  adherence_to_rules: 20
+  open_source_bonus: true
+constraints:
+  new_project: true
+  license: Apache-2.0
+  public_repository_required: true
+  public_video_required: true
+  video_max_minutes: 3
+  submission_language: English
+  test_access_through: 2026-09-01
+  external_publication_requires_user_authorization: true
+  preexisting_material_must_be_disclosed: true
+strategy:
+  product: FixtureForge
+  thesis: Compile DataHub metadata into deterministic, source-row-free test assets.
+  claim_boundary: Source-row-free does not mean anonymous or privacy-safe.
+metric:
+  name: judge_score
+  direction: maximize
+notes:
+  current_strategy: Prove one complete E4 chain before adding breadth.

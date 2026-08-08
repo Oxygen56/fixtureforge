@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --all-groups
+      - run: uv run ruff check src tests
+      - run: uv run mypy src
+      - run: uv run pytest --cov=fixtureforge --cov-report=term-missing
+      - run: uv run fixtureforge generate --input fixtures/fiction_retail.metadata.json --output build/ci-a --seed 2026
+      - run: uv run fixtureforge generate --input fixtures/fiction_retail.metadata.json --output build/ci-b --seed 2026
+      - run: uv run fixtureforge compare --first build/ci-a --second build/ci-b

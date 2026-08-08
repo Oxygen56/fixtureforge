@@ -1,0 +1,31 @@
+{
+  "claim_boundary": "local benchmark; not a production throughput claim",
+  "environment": "local Apple Silicon Docker host, Python 3.12",
+  "method": "generation, CSV and Parquet emission, independent validation, negative control",
+  "results": [
+    {
+      "bundle_bytes": 72072,
+      "duration_seconds": 0.8515,
+      "negative_control_detected": true,
+      "rows_per_dataset": 100,
+      "total_rows": 300,
+      "validation_passed": true
+    },
+    {
+      "bundle_bytes": 426094,
+      "duration_seconds": 1.5212,
+      "negative_control_detected": true,
+      "rows_per_dataset": 1000,
+      "total_rows": 3000,
+      "validation_passed": true
+    },
+    {
+      "bundle_bytes": 4055370,
+      "duration_seconds": 2.2316,
+      "negative_control_detected": true,
+      "rows_per_dataset": 10000,
+      "total_rows": 30000,
+      "validation_passed": true
+    }
+  ]
+}
