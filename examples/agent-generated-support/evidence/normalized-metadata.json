@@ -1,0 +1,497 @@
+{
+  "adapter_evidence": {
+    "mcp_trace_sha256": "f9b4efc1e9b63cce298f56eb2eaa53f53c9ccc060da0145bbf54a32930e1e381",
+    "mode": "live_official_datahub_mcp",
+    "policy_overlay_sha256": "e9fc0d17c228fe0a73fe16816de922b0bb6edc9984284743d5687d28a3776253",
+    "source_row_tools_called": [],
+    "source_rows_read": 0,
+    "tools_used": [
+      "get_entities",
+      "get_lineage",
+      "list_schema_fields",
+      "search"
+    ]
+  },
+  "contract_version": "1.0",
+  "datasets": [
+    {
+      "assertions": [
+        {
+          "field": "account_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "account_id",
+          "kind": "unique",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "company_name",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "created_on",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "owner_email",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "plan",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "plan",
+          "kind": "accepted_values",
+          "maximum": null,
+          "minimum": null,
+          "values": [
+            "starter",
+            "growth",
+            "enterprise"
+          ]
+        }
+      ],
+      "description": "Fictional SaaS customer accounts.",
+      "fields": [
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "account_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [
+            "organization_name"
+          ],
+          "maximum": null,
+          "minimum": null,
+          "name": "company_name",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": "date",
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "created_on",
+          "nullable": false,
+          "tags": [],
+          "type": "DATE",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": "email",
+          "glossary_terms": [
+            "email_address"
+          ],
+          "maximum": null,
+          "minimum": null,
+          "name": "owner_email",
+          "nullable": false,
+          "tags": [
+            "PII"
+          ],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [
+            "starter",
+            "growth",
+            "enterprise"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "plan",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [],
+      "name": "accounts",
+      "primary_key": [
+        "account_id"
+      ],
+      "rows": 10,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.accounts,PROD)"
+    },
+    {
+      "assertions": [
+        {
+          "field": "event_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "event_id",
+          "kind": "unique",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "event_time",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "event_type",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "event_type",
+          "kind": "accepted_values",
+          "maximum": null,
+          "minimum": null,
+          "values": [
+            "created",
+            "assigned",
+            "replied",
+            "resolved"
+          ]
+        },
+        {
+          "field": "ticket_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        }
+      ],
+      "description": "Fictional ticket lifecycle events.",
+      "fields": [
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "event_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "event_time",
+          "nullable": false,
+          "tags": [],
+          "type": "TIMESTAMP",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [
+            "created",
+            "assigned",
+            "replied",
+            "resolved"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "event_type",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "ticket_id",
+          "nullable": false,
+          "tags": [
+            "foreign_key"
+          ],
+          "type": "BIGINT",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [
+        {
+          "fields": [
+            "ticket_id"
+          ],
+          "references_fields": [
+            "ticket_id"
+          ],
+          "references_table": "tickets"
+        }
+      ],
+      "name": "ticket_events",
+      "primary_key": [
+        "event_id"
+      ],
+      "rows": 40,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.ticket_events,PROD)"
+    },
+    {
+      "assertions": [
+        {
+          "field": "ticket_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "ticket_id",
+          "kind": "unique",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "account_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "opened_on",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "priority",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "priority",
+          "kind": "accepted_values",
+          "maximum": null,
+          "minimum": null,
+          "values": [
+            "low",
+            "normal",
+            "high",
+            "urgent"
+          ]
+        },
+        {
+          "field": "requester_email",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "status",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "status",
+          "kind": "accepted_values",
+          "maximum": null,
+          "minimum": null,
+          "values": [
+            "open",
+            "pending",
+            "solved",
+            "closed"
+          ]
+        }
+      ],
+      "description": "Fictional support tickets linked to accounts.",
+      "fields": [
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "ticket_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "account_id",
+          "nullable": false,
+          "tags": [
+            "foreign_key"
+          ],
+          "type": "BIGINT",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": "date",
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "opened_on",
+          "nullable": false,
+          "tags": [],
+          "type": "DATE",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [
+            "low",
+            "normal",
+            "high",
+            "urgent"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "priority",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [],
+          "format": "email",
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "requester_email",
+          "nullable": false,
+          "tags": [
+            "PII"
+          ],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "",
+          "enum_values": [
+            "open",
+            "pending",
+            "solved",
+            "closed"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "status",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [
+        {
+          "fields": [
+            "account_id"
+          ],
+          "references_fields": [
+            "account_id"
+          ],
+          "references_table": "accounts"
+        }
+      ],
+      "name": "tickets",
+      "primary_key": [
+        "ticket_id"
+      ],
+      "rows": 24,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)"
+    }
+  ],
+  "generated_at": null,
+  "lineage": [
+    {
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)",
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.accounts,PROD)"
+    },
+    {
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.ticket_events,PROD)",
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)"
+    }
+  ],
+  "source": "datahub-oss-v1.6.0:official-mcp-server"
+}

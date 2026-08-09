@@ -1,0 +1,151 @@
+version: 2
+models:
+- name: accounts
+  description: Fictional SaaS customer accounts.
+  columns:
+  - name: account_id
+    description: ''
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: company_name
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms:
+      - organization_name
+  - name: created_on
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: owner_email
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - PII
+      datahub_glossary_terms:
+      - email_address
+  - name: plan
+    description: ''
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - starter
+        - growth
+        - enterprise
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+- name: ticket_events
+  description: Fictional ticket lifecycle events.
+  columns:
+  - name: event_id
+    description: ''
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: event_time
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: event_type
+    description: ''
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - created
+        - assigned
+        - replied
+        - resolved
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: ticket_id
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - foreign_key
+      datahub_glossary_terms: []
+- name: tickets
+  description: Fictional support tickets linked to accounts.
+  columns:
+  - name: ticket_id
+    description: ''
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: account_id
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - foreign_key
+      datahub_glossary_terms: []
+  - name: opened_on
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: priority
+    description: ''
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - low
+        - normal
+        - high
+        - urgent
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: requester_email
+    description: ''
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - PII
+      datahub_glossary_terms: []
+  - name: status
+    description: ''
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - open
+        - pending
+        - solved
+        - closed
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
