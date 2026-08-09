@@ -20,7 +20,14 @@
 - [x] Confirm solo-team identity and truthful AI assistance disclosure
 - [x] Submit before 10 August 2026 at 17:00 EDT
 - [x] Verify the public repository, video, and Devpost project links
+- [x] Publish a real agent-generated Git branch and review PR
+- [x] Add a second independent domain and exact search-scope boundary
+- [x] Replace description mutation with a structured DataHub Context Document
+- [ ] Replace the original slideshow video with true live product footage
+- [ ] Update and re-verify Devpost after the final video and PR links
 
 Submission receipt: https://devpost.com/software/fixtureforge displays
 "Submitted to Build with DataHub: The Agent Hackathon"; the submission manager
 shows Submitted and 5/5 steps done.
+
+Agent-generated delivery: https://github.com/Oxygen56/fixtureforge/pull/1

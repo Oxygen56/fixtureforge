@@ -1,33 +1,36 @@
-# Final local validation
+# Final validation
 
 ## Outcome
 
-FixtureForge completed the full local judge workflow against real DataHub OSS
-v1.6.0 and the official DataHub MCP Server.
+FixtureForge v0.2.0 completed the bounded goal-to-Git-to-DataHub loop against
+DataHub OSS v1.6.0 and official `mcp-server-datahub` 0.6.0.
 
-Verified run: 20260809-043312_live-e2e-v2
+Verified live support-domain run: `build/agent-live.Ptbi3a`
 
-- Return code: 0
-- End-to-end duration: 52.591 seconds
-- MCP metadata calls: 7
-- MCP tools used: get_entities, list_schema_fields, get_lineage
+- Natural-language goal interpreted into exact namespace `fiction_support`
+- Search plus one-hop lineage selected 3 datasets and rejected cross-domain matches
 - Source rows read: 0
-- Generated datasets: 3
-- Generated fields: 19
-- Generated rows in judge demo: 60
-- Independent checks: 36 of 36 passed
-- Negative control: one broken customer foreign key detected
-- Repeat build: byte-identical file inventory
-- Local MCP writeback: read-after-write verified
-- Automated tests: 20 passed
-- Core coverage: 96.93 percent
-- Ruff: passed
-- mypy strict mode: passed
-- Demo video draft: 2 minutes 26.84 seconds, 1920 by 1080, H.264 and AAC
+- Generated artifacts: 14
+- Independent live checks: 30 passed
+- Negative control: one broken foreign key detected
+- Repeat build: byte-identical
+- Git delivery: isolated branch and commit created
+- DataHub writeback: Context Document created and full fingerprint read back
+- Automated tests: 27 passed
+- Overall coverage including MCP adapter: 91.59 percent
+- Ruff and mypy strict mode: passed
+
+Public agent delivery: https://github.com/Oxygen56/fixtureforge/pull/1
+
+## Independent second-domain evidence
+
+Retail and support operations have different schemas, governed fields, enum
+policies, and relationship graphs. Both compile and verify; the live agent demo
+uses support operations, while the committed MCP replay uses retail.
 
 ## Scale check
 
-The local benchmark includes generation, CSV and Parquet emission, independent
+The earlier local benchmark includes generation, CSV and Parquet emission,
 validation, and the negative control.
 
 | Total rows | Duration |
@@ -36,31 +39,28 @@ validation, and the negative control.
 | 3,000 | 1.5212 seconds |
 | 30,000 | 2.2316 seconds |
 
-These measurements are local evidence, not a production throughput claim.
+These measurements are local evidence, not production throughput or adoption.
 
 ## Evidence map
 
 | Claim | Evidence |
 |---|---|
-| Real DataHub OSS | GMS version 1.6.0 detected by official MCP |
-| Official agent component | mcp-server-datahub stdio initialization and tool list |
-| Source-row-free | read-only allowlist, zero row tools, trace and manifest |
-| Governance-aware | PII tags and glossary terms returned by list_schema_fields |
-| Relationship-safe | primary keys, foreign keys, lineage, and 36 DuckDB checks |
-| Not a hard-coded green screen | committed negative-control workflow |
-| Deterministic | two independent output inventories compare identical |
-| Writeback works | update_description plus get_entities read-after-write |
+| Autonomous scope | goal, search, lineage, exact namespace receipt, event timeline |
+| Real DataHub OSS | GMS 1.6.0 detected by official pinned MCP server |
+| Source-row-free | allowlisted metadata tools and zero row calls |
+| Governance-aware | tags and glossary terms drive generated values and dbt metadata |
+| Relationship-safe | 30 live DuckDB checks plus a caught broken relation |
+| Deterministic | two output inventories compare byte-identical |
+| Merge-ready delivery | agent-created public branch, commit, and PR |
+| Useful writeback | Context Document with Git receipt and full-fingerprint readback |
 
-## Public release and submission
+## Public release
 
-- Public repository: https://github.com/Oxygen56/fixtureforge
-- Public video: https://youtu.be/nVfAAvWDKyQ
+- Repository: https://github.com/Oxygen56/fixtureforge
+- Agent PR: https://github.com/Oxygen56/fixtureforge/pull/1
+- Current video: https://youtu.be/nVfAAvWDKyQ
 - Submitted project: https://devpost.com/software/fixtureforge
-- Devpost manager status: Submitted, 5/5 steps done
-- Challenge category: Metadata-Aware Code Generation & Development
-- DataHub technologies: DataHub OSS / Core Platform and DataHub MCP Server
-- Country of residence: China
 
-The public Devpost page displays the project under "Submitted to Build with
-DataHub: The Agent Hackathon." The public story, video, source link, technical
-tags, and gallery cover were re-opened after submission.
+The current evidence proves local operation, public CI, and a reviewable Git
+artifact. It does not prove production deployment, external adoption, privacy
+safety, anonymization, or time savings.

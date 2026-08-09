@@ -25,6 +25,7 @@ entered in Metadata-Aware Code Generation & Development.
 - [Submitted Devpost project](https://devpost.com/software/fixtureforge)
 - [Public demonstration video](https://youtu.be/nVfAAvWDKyQ)
 - [Public source repository](https://github.com/Oxygen56/fixtureforge)
+- [Agent-generated review pull request](https://github.com/Oxygen56/fixtureforge/pull/1)
 
 ## The problem
 

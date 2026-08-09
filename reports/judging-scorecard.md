@@ -1,25 +1,24 @@
 # Judging scorecard
 
-This is an internal pre-submission review, not a prediction of official results.
+This is an internal evidence review, not a prediction of official results.
 
-| Criterion | Current evidence | Remaining release work |
+| Official criterion | Current strongest evidence | Remaining risk |
 |---|---|---|
-| Technological implementation | Real OSS, official MCP, compiler, four output types, independent validation, deterministic replay, writeback | Complete Devpost submission |
-| Design | One-command flow and self-contained visual report | Add final repository social preview |
-| Potential impact | Removes production-row copying from fixture creation; 30,000-row local scale check | Quantify developer-time benefit only if a real user test is available |
-| Quality of idea | Distinct source-row-free metadata compiler with negative proof | Keep comparison claims sample-bounded |
-| Adherence to rules | Public Apache-2.0 repo, official MCP, English materials, disclosures, public sub-three-minute video | Devpost submission |
-| Open-source bonus | Public repo, detected license, contribution guide, security policy, tests, CI | No additional release work |
+| Use of DataHub | live search, lineage, schema/governance reads, structured Context Document writeback and content verification | demonstrated on local OSS, not an external tenant |
+| Technical Execution | bounded agent loop, exact scope, four generated artifact types, independent validator, negative control, deterministic rebuild, Git PR | live CI must remain green and judge hardware needs about 6 GB |
+| Originality | generates source-row-free multi-table fixtures from governance metadata, distinct from mutation testing or lineage impact tools | synthetic data quality depends on metadata quality |
+| Real-World Usefulness | agent-created reviewable PR, retail and support domains, dbt and typed factory outputs | no external user or production adoption evidence |
+| Submission Quality | public Apache-2.0 source, one-command replay/live paths, receipts, honest boundaries | original public video is static and must be replaced with live footage |
+| Optional upstream bonus | none claimed | no accepted or reviewed upstream DataHub contribution |
 
 ## Highest-risk claim
 
-Do not call FixtureForge anonymization, privacy-safe, production-ready, or
-proven to save time. The demonstrated claim is narrower: source-row-free,
-deterministic fixture generation from governed metadata.
+Do not call FixtureForge anonymization, privacy-safe, production-ready, adopted,
+or proven to save time. The demonstrated claim is narrower: autonomous,
+source-row-free, deterministic fixture delivery from governed metadata in a
+verified local DataHub environment.
 
-## Recommended submission story
+## Recommended story
 
-Lead with the auditable proof chain, not feature breadth:
-
-DataHub metadata to deterministic fixtures to independent verification to a
-caught negative control to approved MCP writeback.
+One goal → DataHub discovery → governed code generation → independent failure-
+capable verification → real Git PR → approved structured DataHub writeback.
