@@ -1,0 +1,15 @@
+Data teams need realistic fixtures before a pipeline is ready. Copying production rows creates privacy and access risk, while hand-written examples quickly drift from the catalog.
+
+FixtureForge is a bounded autonomous agent. I give it one goal: generate merge-ready, source-row-free fixtures for the fiction support namespace. I do not provide a dataset list.
+
+The agent uses the pinned official DataHub MCP Server to search a real local DataHub OSS catalog. It expands one-hop lineage and applies an exact namespace boundary. Here, it selects accounts, tickets, and ticket events, while rejecting unrelated retail assets. It reads schemas, keys, tags, glossary terms, and lineage. Source rows read stays at zero.
+
+From that metadata, FixtureForge generates linked CSV and Parquet fixtures, dbt tests, typed Python accessors, and a provenance manifest. DuckDB independently runs thirty checks across row counts, nullability, uniqueness, accepted values, and foreign keys.
+
+To prove this is not a hard-coded green screen, the agent deliberately replaces one foreign key with a missing parent. The same verifier rejects it. Then a second independent build produces the identical fingerprint.
+
+This is not just a report. The agent creates a real Git branch and commit. This public pull request contains fourteen generated files, their validation receipts, and the deliberately broken control for human review. Both pull-request CI runs are green.
+
+With explicit approval, the final phase contributes useful context back to DataHub. FixtureForge saves a Context Document related to the selected asset. The document records the fingerprint, validation result, Git branch, and commit. The agent then searches the document content and only reports success when the full fingerprint is read back.
+
+The separate live integration workflow starts pinned DataHub OSS and runs this entire goal-to-Git-to-DataHub loop. FixtureForge is source-row-free and deterministic in this verified environment. It is not an anonymization or production-adoption claim.

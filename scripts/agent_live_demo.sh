@@ -5,6 +5,7 @@ project_root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$project_root"
 
 export DATAHUB_GMS_URL="$(printenv DATAHUB_GMS_URL || echo http://localhost:18080)"
+mkdir -p "$project_root/build"
 workspace="$(mktemp -d "$project_root/build/agent-live.XXXXXX")"
 goal='Generate merge-ready source-row-free fixtures for DataHub assets matching "fiction_support"'
 
