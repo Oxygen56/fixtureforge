@@ -13,9 +13,9 @@
 
 ## External release actions
 
-- [ ] Create and verify the public repository
-- [ ] Confirm GitHub About shows Apache-2.0
-- [ ] Review and upload the public no-login video
+- [x] Create and verify the public repository
+- [x] Confirm GitHub About shows Apache-2.0
+- [x] Review and upload the public no-login video
 - [ ] Add public repository, video, and test links to Devpost
 - [ ] Confirm team identity and any required AI disclosure fields
 - [ ] Submit before 10 August 2026 at 17:00 EDT

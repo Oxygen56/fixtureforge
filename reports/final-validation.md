@@ -53,7 +53,5 @@ These measurements are local evidence, not a production throughput claim.
 
 ## Remaining release gates
 
-The local product, evidence package, and video draft are complete. Public
-repository creation, video upload, public project URL, and final Devpost
-submission are external actions and remain intentionally unperformed until user
-authorization.
+The local product, evidence package, public Apache-2.0 repository, and public
+video are complete. Devpost registration and final submission remain pending.

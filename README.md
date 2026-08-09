@@ -18,6 +18,11 @@ entered in Metadata-Aware Code Generation & Development.
 
 ![FixtureForge verified evidence report](docs/assets/evidence-report.png)
 
+## Demo
+
+- [Public 2:27 demonstration video](https://youtu.be/nVfAAvWDKyQ)
+- [Public source repository](https://github.com/Oxygen56/fixtureforge)
+
 ## The problem
 
 Data developers need representative fixtures before a pipeline is ready. Copying

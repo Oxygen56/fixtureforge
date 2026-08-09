@@ -22,7 +22,8 @@ dbt tests, typed Python accessors, validation evidence, and a negative control.
 - Local run: DATAHUB_GMS_URL=http://localhost:8080 make judge
 - Visual report: build/live-demo/evidence-report.html
 - Local video draft: build/video/fixtureforge-demo-draft.mp4 (2:26, 1080p)
-- Public repository and video: added only after authorized release
+- Public repository: https://github.com/Oxygen56/fixtureforge
+- Public video: https://youtu.be/nVfAAvWDKyQ
 
 ## Technical architecture
 
