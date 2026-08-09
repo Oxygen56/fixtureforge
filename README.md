@@ -23,9 +23,10 @@ entered in Metadata-Aware Code Generation & Development.
 ## Demo
 
 - [Submitted Devpost project](https://devpost.com/software/fixtureforge)
-- [Public demonstration video](https://youtu.be/nVfAAvWDKyQ)
+- [Public live demonstration video (2:07)](https://youtu.be/hZRhNeFJiqA)
 - [Public source repository](https://github.com/Oxygen56/fixtureforge)
 - [Agent-generated review pull request](https://github.com/Oxygen56/fixtureforge/pull/1)
+- [Ownership and adversarial-evidence pull request](https://github.com/Oxygen56/fixtureforge/pull/2)
 - [Upstream DataHub Skill contribution](https://github.com/datahub-project/datahub-skills/pull/127)
 
 ## The problem

@@ -72,8 +72,9 @@ These measurements are local evidence, not production throughput or adoption.
 
 - Repository: https://github.com/Oxygen56/fixtureforge
 - Agent PR: https://github.com/Oxygen56/fixtureforge/pull/1
+- Ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 - Upstream DataHub Skill PR: https://github.com/datahub-project/datahub-skills/pull/127
-- Current video: https://youtu.be/nVfAAvWDKyQ
+- Current video: https://youtu.be/hZRhNeFJiqA
 - Submitted project: https://devpost.com/software/fixtureforge
 
 The current evidence proves local operation, public CI, and a reviewable Git

@@ -21,9 +21,10 @@ dbt tests, typed Python accessors, validation evidence, and a negative control.
 
 - Local run: DATAHUB_GMS_URL=http://localhost:8080 make judge
 - Visual report: build/live-demo/evidence-report.html
-- Local video draft: build/video/fixtureforge-demo-draft.mp4 (2:26, 1080p)
+- Final live video: build/video/fixtureforge-final-live.mp4 (2:07, 1080p)
 - Public repository: https://github.com/Oxygen56/fixtureforge
-- Public video: https://youtu.be/nVfAAvWDKyQ
+- Public video: https://youtu.be/hZRhNeFJiqA
+- Ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 - Submitted Devpost project: https://devpost.com/software/fixtureforge
 - Upstream DataHub Skill contribution: https://github.com/datahub-project/datahub-skills/pull/127
 
@@ -39,10 +40,10 @@ performs a read-after-write check.
 
 - Real DataHub OSS v1.6.0 and official mcp-server-datahub
 - 7 metadata-only MCP calls and zero source-row calls
-- 36 of 36 independent checks passed
+- 30 of 30 live independent checks passed
 - 1 intentionally broken foreign key detected
 - 2 independent builds had identical file inventories
-- 20 tests passed with 96.93 percent core coverage
+- 27 automated tests, strict type checks, and lint checks passed
 - 30,000-row local benchmark completed in 2.2316 seconds
 - 6/6 compatible adversarial schema changes passed on the first attempt
 - 1 invalid relationship refused before generation
