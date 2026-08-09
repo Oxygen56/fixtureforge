@@ -4,12 +4,12 @@ This is an internal evidence review, not a prediction of official results.
 
 | Official criterion | Current strongest evidence | Remaining risk |
 |---|---|---|
-| Use of DataHub | live search, lineage, schema/governance reads, structured Context Document writeback and content verification | demonstrated on local OSS, not an external tenant |
-| Technical Execution | bounded agent loop, exact scope, four generated artifact types, independent validator, negative control, deterministic rebuild, Git PR | live CI must remain green and judge hardware needs about 6 GB |
+| Use of DataHub | live search, lineage, schema/governance/ownership reads, structured Context Document writeback and content verification | demonstrated on local OSS, not an external tenant |
+| Technical Execution | bounded agent loop, exact scope, four generated artifact types, independent validator, negative control, deterministic rebuild, Git PR, 6/6 compatible adversarial changes | live CI must remain green and judge hardware needs about 6 GB |
 | Originality | generates source-row-free multi-table fixtures from governance metadata, distinct from mutation testing or lineage impact tools | synthetic data quality depends on metadata quality |
 | Real-World Usefulness | agent-created reviewable PR, retail and support domains, dbt and typed factory outputs | no external user or production adoption evidence |
-| Submission Quality | public Apache-2.0 source, one-command replay/live paths, receipts, honest boundaries, and a 2:06 live evidence video | judges must follow the evidence links rather than relying on narration alone |
-| Optional upstream bonus | none claimed | no accepted or reviewed upstream DataHub contribution |
+| Submission Quality | public Apache-2.0 source, 2:07 live product video, one-command replay/live paths, receipts, honest boundaries | judges still need to distinguish verified local OSS operation from production adoption |
+| Optional upstream bonus | reusable DataHub fixture-generation Skill submitted as upstream PR #127 | draft contribution is not acceptance or adoption |
 
 ## Highest-risk claim
 

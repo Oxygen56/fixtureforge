@@ -67,6 +67,12 @@ def _dbt_schema(bundle: MetadataBundle) -> dict[str, Any]:
             {
                 "name": dataset.name,
                 "description": dataset.description,
+                "meta": {
+                    "datahub_owners": dataset.owners,
+                    "datahub_tags": dataset.tags,
+                    "datahub_glossary_terms": dataset.glossary_terms,
+                    "datahub_domain": dataset.domain,
+                },
                 "columns": columns,
             }
         )
@@ -115,11 +121,7 @@ def emit_bundle(
     write_json(output / "evidence" / "validation.json", validation)
 
     child = next(
-        (
-            dataset
-            for dataset in metadata.datasets
-            if dataset.foreign_keys
-        ),
+        (dataset for dataset in metadata.datasets if dataset.foreign_keys),
         None,
     )
     negative_result: dict[str, Any] | None = None
@@ -136,9 +138,7 @@ def emit_bundle(
         write_json(output / "evidence" / "negative-validation.json", negative_result)
 
     inventory = file_inventory(output, {"evidence/manifest.json"})
-    metadata_fingerprint = sha256_bytes(
-        canonical_json(metadata.model_dump(mode="json")).encode()
-    )
+    metadata_fingerprint = sha256_bytes(canonical_json(metadata.model_dump(mode="json")).encode())
     manifest = {
         "fixtureforge_version": "0.2.0",
         "seed": seed,

@@ -23,11 +23,15 @@ with approval, writes a verified Context Document back to DataHub.
 
 - Live run: DATAHUB_GMS_URL=http://localhost:18080 make agent-live
 - Recorded replay: make agent-demo
+- Visual report: build/live-demo/evidence-report.html
+- Final live video: build/video/fixtureforge-final-live.mp4 (2:07, 1080p)
 - Public repository: https://github.com/Oxygen56/fixtureforge
-- Live 2:06 video: https://youtu.be/hZRhNeFJiqA
+- Public video: https://youtu.be/hZRhNeFJiqA
 - Agent-generated PR: https://github.com/Oxygen56/fixtureforge/pull/1
 - Clean-room live workflow: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
+- Ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 - Submitted Devpost project: https://devpost.com/software/fixtureforge
+- Upstream DataHub Skill contribution: https://github.com/datahub-project/datahub-skills/pull/127
 
 ## Technical architecture
 
@@ -49,6 +53,8 @@ a full-fingerprint read-after-write check.
 - Verified DataHub Context Document writeback and full-fingerprint readback
 - 27 tests passed with 91.59 percent overall coverage including the MCP adapter
 - 30,000-row local benchmark completed in 2.2316 seconds
+- 6/6 compatible adversarial schema changes passed on the first attempt
+- 1 invalid relationship refused before generation
 - Strict type and lint checks passed
 
 ## Judging rubric mapping

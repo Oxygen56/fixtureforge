@@ -29,6 +29,28 @@ def _write_trace(path: Path) -> None:
     parent = {
         "urn": parent_urn,
         "properties": {"description": "Customers"},
+        "ownership": {"owners": [{"owner": {"urn": "urn:li:corpuser:data-platform"}}]},
+        "tags": {
+            "tags": [
+                {
+                    "tag": {
+                        "urn": "urn:li:tag:Critical",
+                        "properties": {"name": "Critical"},
+                    }
+                }
+            ]
+        },
+        "glossaryTerms": {
+            "terms": [
+                {
+                    "term": {
+                        "urn": "urn:li:glossaryTerm:Customer",
+                        "properties": {"name": "Customer"},
+                    }
+                }
+            ]
+        },
+        "domain": {"domain": {"urn": "urn:li:domain:commerce"}},
         "schemaMetadata": {
             "primaryKeys": ["customer_id"],
             "fields": [
@@ -109,11 +131,7 @@ def _write_trace(path: Path) -> None:
         _call(
             "get_lineage",
             {"urn": parent_urn},
-            {
-                "downstreams": {
-                    "searchResults": [{"entity": {"urn": child_urn}}]
-                }
-            },
+            {"downstreams": {"searchResults": [{"entity": {"urn": child_urn}}]}},
         ),
     ]
     path.write_text(
@@ -147,11 +165,7 @@ def test_normalize_live_trace_with_policy(tmp_path: Path) -> None:
                     },
                     "orders": {
                         "rows": 6,
-                        "fields": {
-                            "status": {
-                                "enum_values": ["pending", "paid"]
-                            }
-                        },
+                        "fields": {"status": {"enum_values": ["pending", "paid"]}},
                     },
                 }
             }
@@ -162,6 +176,10 @@ def test_normalize_live_trace_with_policy(tmp_path: Path) -> None:
     assert customers.rows == 4
     assert customers.fields[1].tags == ["PII"]
     assert customers.fields[1].glossary_terms == ["email_address"]
+    assert customers.owners == ["urn:li:corpuser:data-platform"]
+    assert customers.tags == ["critical"]
+    assert customers.glossary_terms == ["customer"]
+    assert customers.domain == "urn:li:domain:commerce"
     assert orders.foreign_keys[0].references_table == "customers"
     assert orders.fields[2].enum_values == ["pending", "paid"]
     assert bundle.lineage[0].upstream == customers.urn

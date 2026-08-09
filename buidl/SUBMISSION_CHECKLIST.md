@@ -8,7 +8,7 @@
 - [x] Secret and local-path scan completed
 - [x] Judging rubric mapping is documented
 - [x] Root Apache-2.0 license and third-party notices are present
-- [x] English submission copy, storyboard, narration, and a 2:26 video draft are ready
+- [x] English submission copy and a 2:07 public live product video are ready
 - [x] AI assistance disclosure is ready
 
 ## External release actions
@@ -18,11 +18,14 @@
 - [x] Review and upload the public no-login video
 - [x] Add public repository, video, and test links to Devpost
 - [x] Confirm solo-team identity and truthful AI assistance disclosure
-- [x] Submit before 10 August 2026 at 17:00 EDT
+- [x] Submit before 11 August 2026 at 05:00 GMT+8
 - [x] Verify the public repository, video, and Devpost project links
 - [x] Publish a real agent-generated Git branch and review PR
 - [x] Add a second independent domain and exact search-scope boundary
 - [x] Replace description mutation with a structured DataHub Context Document
+- [x] Add ownership-aware generation and exact official-MCP ownership evidence
+- [x] Add adversarial schema first-pass and refusal metrics
+- [x] Publish an upstream DataHub Skill contribution PR
 - [x] Replace the original slideshow video with true live product footage
 - [x] Update and re-verify Devpost after the final video and PR links
 
@@ -31,6 +34,8 @@ Submission receipt: https://devpost.com/software/fixtureforge displays
 shows Submitted and 5/5 steps done.
 
 Agent-generated delivery: https://github.com/Oxygen56/fixtureforge/pull/1
+
+Current ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 
 Final live video: https://youtu.be/hZRhNeFJiqA
 

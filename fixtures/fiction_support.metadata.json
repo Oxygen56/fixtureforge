@@ -6,6 +6,7 @@
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.accounts,PROD)",
       "name": "accounts",
       "description": "Fictional SaaS customer accounts.",
+      "owners": ["urn:li:corpuser:fixtureforge-support"],
       "rows": 10,
       "fields": [
         {"name": "account_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},
@@ -20,6 +21,7 @@
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)",
       "name": "tickets",
       "description": "Fictional support tickets linked to accounts.",
+      "owners": ["urn:li:corpuser:fixtureforge-support"],
       "rows": 24,
       "fields": [
         {"name": "ticket_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},
@@ -36,6 +38,7 @@
       "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.ticket_events,PROD)",
       "name": "ticket_events",
       "description": "Fictional ticket lifecycle events.",
+      "owners": ["urn:li:corpuser:fixtureforge-support"],
       "rows": 40,
       "fields": [
         {"name": "event_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},

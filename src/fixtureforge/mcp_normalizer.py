@@ -37,6 +37,44 @@ def _slug(value: str) -> str:
     return "PII" if slug == "pii" else slug
 
 
+def _association_names(value: Any, collection_key: str, entity_key: str) -> list[str]:
+    """Extract normalized names from cleaned DataHub association payloads."""
+    if not isinstance(value, dict):
+        return []
+    names: list[str] = []
+    for association in value.get(collection_key, []):
+        entity = association.get(entity_key, {}) if isinstance(association, dict) else {}
+        if not isinstance(entity, dict):
+            continue
+        properties = entity.get("properties") or {}
+        candidate = properties.get("name") if isinstance(properties, dict) else None
+        candidate = candidate or entity.get("urn")
+        if isinstance(candidate, str):
+            names.append(candidate)
+    return sorted({_slug(name) for name in names})
+
+
+def _owners(value: Any) -> list[str]:
+    if not isinstance(value, dict):
+        return []
+    owners: list[str] = []
+    for association in value.get("owners", []):
+        owner = association.get("owner", {}) if isinstance(association, dict) else {}
+        if isinstance(owner, dict) and isinstance(owner.get("urn"), str):
+            owners.append(owner["urn"])
+    return sorted(set(owners))
+
+
+def _domain(value: Any) -> str | None:
+    if not isinstance(value, dict):
+        return None
+    domain = value.get("domain") or {}
+    if isinstance(domain, dict) and isinstance(domain.get("urn"), str):
+        urn: str = domain["urn"]
+        return urn
+    return None
+
+
 def _field_overlay(
     policy: dict[str, Any],
     dataset: str,
@@ -94,19 +132,13 @@ def normalize_trace(
         urn = entity["urn"]
         name = _dataset_name(urn)
         schema_metadata = entity["schemaMetadata"]
-        detailed_fields = {
-            field["fieldPath"]: field
-            for field in schema_calls[urn]["fields"]
-        }
+        detailed_fields = {field["fieldPath"]: field for field in schema_calls[urn]["fields"]}
         primary_key = list(schema_metadata.get("primaryKeys") or [])
         fields: list[FieldSpec] = []
         for raw_field in schema_metadata["fields"]:
             details = detailed_fields.get(raw_field["fieldPath"], raw_field)
             overlay = _field_overlay(policy, name, raw_field["fieldPath"])
-            tags = [
-                _slug(value)
-                for value in details.get("editedTags", details.get("tags", []))
-            ]
+            tags = [_slug(value) for value in details.get("editedTags", details.get("tags", []))]
             terms = [
                 _slug(value)
                 for value in details.get(
@@ -128,17 +160,9 @@ def normalize_trace(
             )
         foreign_keys = [
             ForeignKeySpec(
-                fields=[
-                    field["fieldPath"]
-                    for field in foreign_key["sourceFields"]
-                ],
-                references_table=_dataset_name(
-                    foreign_key["foreignDataset"]["urn"]
-                ),
-                references_fields=[
-                    field["fieldPath"]
-                    for field in foreign_key["foreignFields"]
-                ],
+                fields=[field["fieldPath"] for field in foreign_key["sourceFields"]],
+                references_table=_dataset_name(foreign_key["foreignDataset"]["urn"]),
+                references_fields=[field["fieldPath"] for field in foreign_key["foreignFields"]],
             )
             for foreign_key in schema_metadata.get("foreignKeys") or []
         ]
@@ -153,6 +177,10 @@ def normalize_trace(
                 urn=urn,
                 name=name,
                 description=description,
+                owners=_owners(entity.get("ownership")),
+                tags=_association_names(entity.get("tags"), "tags", "tag"),
+                glossary_terms=_association_names(entity.get("glossaryTerms"), "terms", "term"),
+                domain=_domain(entity.get("domain")),
                 rows=rows,
                 fields=fields,
                 primary_key=primary_key,

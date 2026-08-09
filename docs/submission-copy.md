@@ -16,7 +16,7 @@ that metadata into code still takes repetitive work.
 
 FixtureForge is a bounded autonomous metadata-to-code agent. From one natural-
 language goal it searches DataHub through the official MCP Server, expands the
-selected lineage graph, inspects schema, keys, tags, and glossary terms, and
+selected lineage graph, inspects schema, keys, lineage, ownership, tags, and glossary terms, and
 applies an explicit scope boundary. It then emits linked CSV and Parquet
 fixtures, dbt tests, typed Python accessors, and a provenance manifest.
 
@@ -52,7 +52,12 @@ anonymization, compliance, or production-readiness claim.
 - structured DataHub Context Document with full-fingerprint readback;
 - 27 automated tests with 91.59 percent overall MCP-inclusive coverage;
 - core CI plus a [green clean-room live DataHub integration workflow](https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018);
-- a [2:06 live evidence video](https://youtu.be/hZRhNeFJiqA) covering the agent report, generated PR, DataHub writeback, and live workflow;
+- 6 of 6 compatible adversarial schema changes passed on the first attempt,
+  while an invalid relationship was refused before generation;
+- ownership was seeded and read back for all three live support datasets;
+- [an upstream DataHub Skill contribution](https://github.com/datahub-project/datahub-skills/pull/127)
+  packages the evidence-first workflow for reuse;
+- a [2:07 live evidence video](https://youtu.be/hZRhNeFJiqA) covering the agent report, generated PR, DataHub writeback, and live workflow;
 - public Apache-2.0 source and a reproducible recorded-MCP judge path.
 
 ## What we learned
