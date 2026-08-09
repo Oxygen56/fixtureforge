@@ -1,5 +1,7 @@
 # Devpost submission draft
 
+Published at https://devpost.com/software/fixtureforge on 9 August 2026.
+
 ## Tagline
 
 Compile governed DataHub metadata into deterministic test fixtures — without

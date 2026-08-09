@@ -51,7 +51,16 @@ These measurements are local evidence, not a production throughput claim.
 | Deterministic | two independent output inventories compare identical |
 | Writeback works | update_description plus get_entities read-after-write |
 
-## Remaining release gates
+## Public release and submission
 
-The local product, evidence package, public Apache-2.0 repository, and public
-video are complete. Devpost registration and final submission remain pending.
+- Public repository: https://github.com/Oxygen56/fixtureforge
+- Public video: https://youtu.be/nVfAAvWDKyQ
+- Submitted project: https://devpost.com/software/fixtureforge
+- Devpost manager status: Submitted, 5/5 steps done
+- Challenge category: Metadata-Aware Code Generation & Development
+- DataHub technologies: DataHub OSS / Core Platform and DataHub MCP Server
+- Country of residence: China
+
+The public Devpost page displays the project under "Submitted to Build with
+DataHub: The Agent Hackathon." The public story, video, source link, technical
+tags, and gallery cover were re-opened after submission.

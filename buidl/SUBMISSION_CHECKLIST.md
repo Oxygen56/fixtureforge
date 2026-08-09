@@ -16,7 +16,11 @@
 - [x] Create and verify the public repository
 - [x] Confirm GitHub About shows Apache-2.0
 - [x] Review and upload the public no-login video
-- [ ] Add public repository, video, and test links to Devpost
-- [ ] Confirm team identity and any required AI disclosure fields
-- [ ] Submit before 10 August 2026 at 17:00 EDT
-- [ ] Re-open the public links in a signed-out browser
+- [x] Add public repository, video, and test links to Devpost
+- [x] Confirm solo-team identity and truthful AI assistance disclosure
+- [x] Submit before 10 August 2026 at 17:00 EDT
+- [x] Verify the public repository, video, and Devpost project links
+
+Submission receipt: https://devpost.com/software/fixtureforge displays
+"Submitted to Build with DataHub: The Agent Hackathon"; the submission manager
+shows Submitted and 5/5 steps done.

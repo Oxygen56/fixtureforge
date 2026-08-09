@@ -24,6 +24,7 @@ dbt tests, typed Python accessors, validation evidence, and a negative control.
 - Local video draft: build/video/fixtureforge-demo-draft.mp4 (2:26, 1080p)
 - Public repository: https://github.com/Oxygen56/fixtureforge
 - Public video: https://youtu.be/nVfAAvWDKyQ
+- Submitted Devpost project: https://devpost.com/software/fixtureforge
 
 ## Technical architecture
 

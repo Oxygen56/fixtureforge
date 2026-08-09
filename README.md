@@ -20,6 +20,7 @@ entered in Metadata-Aware Code Generation & Development.
 
 ## Demo
 
+- [Submitted Devpost project](https://devpost.com/software/fixtureforge)
 - [Public 2:27 demonstration video](https://youtu.be/nVfAAvWDKyQ)
 - [Public source repository](https://github.com/Oxygen56/fixtureforge)
 
