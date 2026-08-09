@@ -58,6 +58,10 @@ class DatasetSpec(BaseModel):
     urn: str
     name: str
     description: str = ""
+    owners: list[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
+    glossary_terms: list[str] = Field(default_factory=list)
+    domain: str | None = None
     rows: int = Field(default=12, ge=2, le=10_000)
     fields: list[FieldSpec]
     primary_key: list[str] = Field(default_factory=list)

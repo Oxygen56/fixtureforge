@@ -17,9 +17,7 @@ from fixtureforge.evidence import write_json
 from fixtureforge.models import MetadataBundle
 
 MCP_SERVER_VERSION = "0.6.0"
-READ_ONLY_TOOLS = frozenset(
-    {"search", "get_entities", "list_schema_fields", "get_lineage"}
-)
+READ_ONLY_TOOLS = frozenset({"search", "get_entities", "list_schema_fields", "get_lineage"})
 
 
 def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: no cover
@@ -28,7 +26,7 @@ def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: n
         ForeignKeyConstraintClass,
         SchemaMetadataClass,
     )
-    from datahub.metadata.urns import SchemaFieldUrn
+    from datahub.metadata.urns import CorpUserUrn, SchemaFieldUrn
     from datahub.sdk.dataset import Dataset
     from datahub.sdk.glossary_term import GlossaryTerm
     from datahub.sdk.main_client import DataHubClient
@@ -39,14 +37,20 @@ def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: n
     emitted: list[str] = []
     datasets = {dataset.name: dataset for dataset in metadata.datasets}
     tags = sorted(
-        {tag for dataset in metadata.datasets for field in dataset.fields for tag in field.tags}
+        {
+            tag
+            for dataset in metadata.datasets
+            for tag in [*dataset.tags, *(tag for field in dataset.fields for tag in field.tags)]
+        }
     )
     terms = sorted(
         {
             term
             for dataset in metadata.datasets
-            for field in dataset.fields
-            for term in field.glossary_terms
+            for term in [
+                *dataset.glossary_terms,
+                *(term for field in dataset.fields for term in field.glossary_terms),
+            ]
         }
     )
     for tag in tags:
@@ -67,20 +71,19 @@ def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: n
         )
     for dataset in metadata.datasets:
         qualified_name = dataset.urn.split(",", 2)[1]
-        schema = [
-            (field.name, field.type, field.description)
-            for field in dataset.fields
-        ]
+        schema = [(field.name, field.type, field.description) for field in dataset.fields]
         entity = Dataset(
             platform="postgres",
             name=qualified_name,
             env="PROD",
             description=dataset.description,
             display_name=f"FixtureForge · {qualified_name}",
+            owners=[CorpUserUrn.from_string(owner) for owner in dataset.owners],
+            tags=[f"urn:li:tag:{tag}" for tag in dataset.tags],
+            terms=[f"urn:li:glossaryTerm:{term}" for term in dataset.glossary_terms],
             schema=schema,
             upstreams=[
-                datasets[relation.references_table].urn
-                for relation in dataset.foreign_keys
+                datasets[relation.references_table].urn for relation in dataset.foreign_keys
             ],
             custom_properties={
                 "fixtureforge_source": "fictional metadata only",
@@ -95,9 +98,7 @@ def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: n
             for term in field.glossary_terms:
                 schema_field.add_term(f"urn:li:glossaryTerm:{term}")
         schema_metadata = next(
-            mcp.aspect
-            for mcp in entity.as_mcps()
-            if mcp.aspectName == "schemaMetadata"
+            mcp.aspect for mcp in entity.as_mcps() if mcp.aspectName == "schemaMetadata"
         )
         if not isinstance(schema_metadata, SchemaMetadataClass):
             raise TypeError("DataHub SDK did not produce schema metadata")
@@ -106,13 +107,8 @@ def seed_local_datahub(metadata: MetadataBundle) -> dict[str, Any]:  # pragma: n
             aspect_field.isPartOfKey = aspect_field.fieldPath in dataset.primary_key
         schema_metadata.foreignKeys = [
             ForeignKeyConstraintClass(
-                name=(
-                    f"fixtureforge_{dataset.name}_{'_'.join(relation.fields)}_fk"
-                ),
-                sourceFields=[
-                    str(SchemaFieldUrn(dataset.urn, field))
-                    for field in relation.fields
-                ],
+                name=(f"fixtureforge_{dataset.name}_{'_'.join(relation.fields)}_fk"),
+                sourceFields=[str(SchemaFieldUrn(dataset.urn, field)) for field in relation.fields],
                 foreignFields=[
                     str(
                         SchemaFieldUrn(
@@ -369,10 +365,7 @@ async def writeback_local_evidence(
     delivery_lines = ""
     delivery_state = "ready for Git review"
     if delivery and delivery.get("status") == "committed":
-        delivery_lines = (
-            f"- Git branch: {delivery['branch']}\n"
-            f"- Git commit: {delivery['commit']}\n"
-        )
+        delivery_lines = f"- Git branch: {delivery['branch']}\n- Git commit: {delivery['commit']}\n"
         delivery_state = "committed for Git review"
     content = (
         "# FixtureForge generation evidence\n\n"

@@ -25,6 +25,7 @@ dbt tests, typed Python accessors, validation evidence, and a negative control.
 - Public repository: https://github.com/Oxygen56/fixtureforge
 - Public video: https://youtu.be/nVfAAvWDKyQ
 - Submitted Devpost project: https://devpost.com/software/fixtureforge
+- Upstream DataHub Skill contribution: https://github.com/datahub-project/datahub-skills/pull/127
 
 ## Technical architecture
 
@@ -43,6 +44,8 @@ performs a read-after-write check.
 - 2 independent builds had identical file inventories
 - 20 tests passed with 96.93 percent core coverage
 - 30,000-row local benchmark completed in 2.2316 seconds
+- 6/6 compatible adversarial schema changes passed on the first attempt
+- 1 invalid relationship refused before generation
 - Strict type and lint checks passed
 
 ## Judging rubric mapping

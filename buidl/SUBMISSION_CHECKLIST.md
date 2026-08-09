@@ -23,6 +23,9 @@
 - [x] Publish a real agent-generated Git branch and review PR
 - [x] Add a second independent domain and exact search-scope boundary
 - [x] Replace description mutation with a structured DataHub Context Document
+- [x] Add ownership-aware generation and exact official-MCP ownership evidence
+- [x] Add adversarial schema first-pass and refusal metrics
+- [x] Publish an upstream DataHub Skill contribution PR
 - [ ] Replace the original slideshow video with true live product footage
 - [ ] Update and re-verify Devpost after the final video and PR links
 

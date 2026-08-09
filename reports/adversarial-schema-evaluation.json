@@ -1,0 +1,73 @@
+{
+  "claim_boundary": "Local fictional schemas on one Apple Silicon host; this is not a production reliability or throughput claim.",
+  "compatible_cases_including_baseline": 6,
+  "compatible_schema_changes": 5,
+  "first_pass_success_rate": 1.0,
+  "first_pass_successes": 6,
+  "guardrail_cases": 1,
+  "guardrail_catches": 1,
+  "latency_seconds": {
+    "max": 4.4119,
+    "median": 2.8801,
+    "p95": 4.4119
+  },
+  "method": "One attempt per scenario; generation, CSV/Parquet emission, independent validation, and negative control are included in compatible-case latency.",
+  "results": [
+    {
+      "duration_seconds": 2.988,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "3f96245b457155b9fc144efb0807385d259f05e4d6530755308ddbabbe321e68",
+      "passed": true,
+      "scenario": "baseline"
+    },
+    {
+      "duration_seconds": 1.1494,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "49d855778d2e91b52355bf67a1ebe9c081825fedb63bbac874dac75377c19221",
+      "passed": true,
+      "scenario": "required_column_added"
+    },
+    {
+      "duration_seconds": 2.4092,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "c32149a9b890d9d20b37c4c3ef6ef86af7f295c19a9b1efb2e9bf1fb91a71417",
+      "passed": true,
+      "scenario": "governed_pii_column_added"
+    },
+    {
+      "duration_seconds": 2.0574,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "7df26ddc5014caa5218f9b76e83cca42980c7254fba802ce2ca9d0125f278a26",
+      "passed": true,
+      "scenario": "enum_expanded"
+    },
+    {
+      "duration_seconds": 4.4119,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "d3f4dda9db7db9dec38caf0a0d3297742c9cdbbfdd017a1d9e8bfc98c517cd68",
+      "passed": true,
+      "scenario": "relational_key_renamed"
+    },
+    {
+      "duration_seconds": 2.8801,
+      "expected": "merge_ready",
+      "first_pass": true,
+      "metadata_fingerprint": "b0f31d025dd6fa1f0119e8418ea77b0cbbdf630f3930a16486a6beb6d046c1aa",
+      "passed": true,
+      "scenario": "schema_fields_reordered"
+    },
+    {
+      "duration_seconds": 0.0016,
+      "evidence": "unknown parent dataset: missing_accounts",
+      "expected": "refuse_before_generation",
+      "first_pass": true,
+      "passed": true,
+      "scenario": "foreign_key_target_missing"
+    }
+  ]
+}

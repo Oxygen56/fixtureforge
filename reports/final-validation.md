@@ -20,6 +20,18 @@ Verified live support-domain run: `build/agent-live.Ptbi3a`
 - Overall coverage including MCP adapter: 91.59 percent
 - Ruff and mypy strict mode: passed
 
+Adversarial schema evaluation (local Apple Silicon, fictional metadata):
+
+- Compatible changes: 6/6 generated and validated on the first attempt
+- Invalid foreign-key target: 1/1 refused before generation
+- Compatible-case latency: 1.1494 to 4.4119 seconds per one-attempt run
+- Live ownership: the official MCP normalized the same owner for all 3 support datasets
+
+The later exact-asset ownership read succeeded, but its combined follow-on run
+timed out while the local DataHub search service was degraded. It is not counted
+as a second successful end-to-end writeback; the complete live run above remains
+the writeback evidence.
+
 Public agent delivery: https://github.com/Oxygen56/fixtureforge/pull/1
 
 ## Independent second-domain evidence
@@ -49,6 +61,8 @@ These measurements are local evidence, not production throughput or adoption.
 | Real DataHub OSS | GMS 1.6.0 detected by official pinned MCP server |
 | Source-row-free | allowlisted metadata tools and zero row calls |
 | Governance-aware | tags and glossary terms drive generated values and dbt metadata |
+| Ownership-aware | official MCP normalized the owner on all 3 live support datasets |
+| Schema-change resilience | 6/6 compatible adversarial changes passed first attempt; invalid relationship refused |
 | Relationship-safe | 30 live DuckDB checks plus a caught broken relation |
 | Deterministic | two output inventories compare byte-identical |
 | Merge-ready delivery | agent-created public branch, commit, and PR |
@@ -58,6 +72,7 @@ These measurements are local evidence, not production throughput or adoption.
 
 - Repository: https://github.com/Oxygen56/fixtureforge
 - Agent PR: https://github.com/Oxygen56/fixtureforge/pull/1
+- Upstream DataHub Skill PR: https://github.com/datahub-project/datahub-skills/pull/127
 - Current video: https://youtu.be/nVfAAvWDKyQ
 - Submitted project: https://devpost.com/software/fixtureforge
 

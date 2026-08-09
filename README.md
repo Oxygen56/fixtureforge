@@ -26,6 +26,7 @@ entered in Metadata-Aware Code Generation & Development.
 - [Public demonstration video](https://youtu.be/nVfAAvWDKyQ)
 - [Public source repository](https://github.com/Oxygen56/fixtureforge)
 - [Agent-generated review pull request](https://github.com/Oxygen56/fixtureforge/pull/1)
+- [Upstream DataHub Skill contribution](https://github.com/datahub-project/datahub-skills/pull/127)
 
 ## The problem
 
@@ -52,6 +53,12 @@ deterministic rebuild, Git delivery, and writeback as separate states. DuckDB
 independently checks row counts, nullability, uniqueness, ranges, enums, and
 foreign keys. FixtureForge then breaks one foreign key on purpose and proves the
 same verifier rejects it.
+
+The adversarial schema suite changes required columns, governed PII fields,
+enums, relationships, and field order. All 6 compatible changes generated and
+validated on the first attempt; the invalid foreign-key target was refused
+before generation. These are local fictional-domain measurements, not a
+production reliability claim.
 
 ## Architecture
 
@@ -128,7 +135,7 @@ Review the [committed verified retail sample](examples/verified-output) and the
 ## Reproducibility and CI
 
 The same metadata, policy, version, and seed produce byte-identical outputs.
-The 26-test suite covers the replay agent, Git delivery, transport safety,
+The 27-test suite covers the replay agent, Git delivery, transport safety,
 document writeback, integration, property cases, and negative controls. Overall
 coverage, including the MCP adapter, is enforced at 90 percent.
 
