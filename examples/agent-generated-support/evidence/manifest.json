@@ -1,0 +1,67 @@
+{
+  "adapter_evidence": {
+    "mcp_trace_sha256": "f9b4efc1e9b63cce298f56eb2eaa53f53c9ccc060da0145bbf54a32930e1e381",
+    "mode": "live_official_datahub_mcp",
+    "policy_overlay_sha256": "e9fc0d17c228fe0a73fe16816de922b0bb6edc9984284743d5687d28a3776253",
+    "source_row_tools_called": [],
+    "source_rows_read": 0,
+    "tools_used": [
+      "get_entities",
+      "get_lineage",
+      "list_schema_fields",
+      "search"
+    ]
+  },
+  "claim": "source-row-free",
+  "claim_boundary": "not anonymization or a privacy guarantee",
+  "dataset_order": [
+    "accounts",
+    "tickets",
+    "ticket_events"
+  ],
+  "files": {
+    "developer/factories.py": "a0d5e42d0014fc29e9bd7d69a1edb993b8af056e95f22ba5dd4e8752124109fe",
+    "developer/schema.yml": "6402c4148270728d5e3dd5e8e8e822f2b37674314b2df4395d58dfc0a1a4f5dd",
+    "evidence/negative-validation.json": "edf0c7592b4b66fe467226e6c8817ca9bdeb2241c51706df8f9dd0caae79bca4",
+    "evidence/normalized-metadata.json": "02e99987d7093193ac7fb0b77e76883347e8666af2522ab1d1723491aec0bc4f",
+    "evidence/validation.json": "59e9eaad7ea6d01d3f8adeff9db4e4b0222c9e59f0a338e75cc5d4eed746320c",
+    "negative/broken_foreign_key/accounts.csv": "4dc7861d822a1451cb10b9d47022995dda22e675925494cc9c7791f757325cd7",
+    "negative/broken_foreign_key/ticket_events.csv": "6639d996ade8fdd8f92859342ed431002a45f9051f5c161ed05e89e6bc9c4da8",
+    "negative/broken_foreign_key/tickets.csv": "a48364dedda0573fb7fb275546da77f31a7433a01426befdabdfd29899f356a7",
+    "valid/csv/accounts.csv": "4dc7861d822a1451cb10b9d47022995dda22e675925494cc9c7791f757325cd7",
+    "valid/csv/ticket_events.csv": "98baedb8809a99f8c6b71ba322fb0646fe05f06bb7fd8491877d2f30e8b5dbe5",
+    "valid/csv/tickets.csv": "a48364dedda0573fb7fb275546da77f31a7433a01426befdabdfd29899f356a7",
+    "valid/parquet/accounts.parquet": "1cc4a8d9f4029b1ddeee00810a8fcbbaa87eb7669aec66fb6036b6b4826e1f8d",
+    "valid/parquet/ticket_events.parquet": "fb9b926a0239cf5bd769940bddaf27a564981f9569079685013cd667d0e47672",
+    "valid/parquet/tickets.parquet": "96be9c82ea8d6f8e650718e361ba7a8e22e25c7d6d543484077bfcd436d9b89d"
+  },
+  "fixtureforge_version": "0.2.0",
+  "generation_rules": {
+    "accounts": {
+      "account_id": "sequential_primary_key",
+      "company_name": "metadata_semantic_generator",
+      "created_on": "metadata_semantic_generator",
+      "owner_email": "metadata_semantic_generator",
+      "plan": "metadata_semantic_generator"
+    },
+    "ticket_events": {
+      "event_id": "sequential_primary_key",
+      "event_time": "metadata_semantic_generator",
+      "event_type": "metadata_semantic_generator",
+      "ticket_id": "foreign_key:tickets.ticket_id"
+    },
+    "tickets": {
+      "account_id": "foreign_key:accounts.account_id",
+      "opened_on": "metadata_semantic_generator",
+      "priority": "metadata_semantic_generator",
+      "requester_email": "metadata_semantic_generator",
+      "status": "metadata_semantic_generator",
+      "ticket_id": "sequential_primary_key"
+    }
+  },
+  "metadata_fingerprint": "e8f57d3dce642322d99df1b08a8f8bcc184a7c612441f47931319546db6cf68f",
+  "negative_control_detected": true,
+  "seed": 2026,
+  "source_row_access": "none",
+  "validation_passed": true
+}

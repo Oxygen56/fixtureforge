@@ -1,0 +1,11 @@
+account_id,company_name,created_on,owner_email,plan
+1,accounts_company_name_6179642,2024-01-01,fixture.accounts.1@example.test,starter
+2,accounts_company_name_7382720,2024-01-08,fixture.accounts.2@example.test,growth
+3,accounts_company_name_0618549,2024-01-15,fixture.accounts.3@example.test,enterprise
+4,accounts_company_name_7974221,2024-01-22,fixture.accounts.4@example.test,starter
+5,accounts_company_name_7128220,2024-01-29,fixture.accounts.5@example.test,growth
+6,accounts_company_name_0896428,2024-02-05,fixture.accounts.6@example.test,enterprise
+7,accounts_company_name_2884340,2024-02-12,fixture.accounts.7@example.test,starter
+8,accounts_company_name_5728784,2024-02-19,fixture.accounts.8@example.test,growth
+9,accounts_company_name_6736330,2024-02-26,fixture.accounts.9@example.test,enterprise
+10,accounts_company_name_9447944,2024-03-04,fixture.accounts.10@example.test,starter

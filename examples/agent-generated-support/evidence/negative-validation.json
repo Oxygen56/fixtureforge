@@ -1,0 +1,236 @@
+{
+  "checks": [
+    {
+      "actual": 10,
+      "check": "row_count",
+      "dataset": "accounts",
+      "expected": 10,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "accounts",
+      "field": "account_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "accounts",
+      "field": "company_name",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "accounts",
+      "field": "created_on",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "accounts",
+      "field": "owner_email",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "accounts",
+      "field": "plan",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "accounts",
+      "fields": [
+        "account_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "accounts",
+      "fields": [
+        "account_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "accounts",
+      "field": "plan",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "actual": 40,
+      "check": "row_count",
+      "dataset": "ticket_events",
+      "expected": 40,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "ticket_events",
+      "field": "event_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "ticket_events",
+      "field": "event_time",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "ticket_events",
+      "field": "event_type",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "ticket_events",
+      "field": "ticket_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "ticket_events",
+      "fields": [
+        "event_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "ticket_events",
+      "fields": [
+        "event_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "ticket_events",
+      "field": "event_type",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "foreign_key",
+      "dataset": "ticket_events",
+      "fields": [
+        "ticket_id"
+      ],
+      "passed": false,
+      "references": "tickets.ticket_id",
+      "violations": 1
+    },
+    {
+      "actual": 24,
+      "check": "row_count",
+      "dataset": "tickets",
+      "expected": 24,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "account_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "opened_on",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "priority",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "requester_email",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "status",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "tickets",
+      "field": "ticket_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "tickets",
+      "fields": [
+        "ticket_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "tickets",
+      "fields": [
+        "ticket_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "tickets",
+      "field": "priority",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "tickets",
+      "field": "status",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "foreign_key",
+      "dataset": "tickets",
+      "fields": [
+        "account_id"
+      ],
+      "passed": true,
+      "references": "accounts.account_id",
+      "violations": 0
+    }
+  ],
+  "checks_passed": 29,
+  "checks_total": 30,
+  "passed": false,
+  "status": "violations_found"
+}
