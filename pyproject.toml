@@ -1,6 +1,6 @@
 [project]
 name = "fixtureforge"
-version = "0.1.0"
+version = "0.2.0"
 description = "Compile DataHub metadata into deterministic source-row-free test assets."
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
@@ -62,7 +62,6 @@ branch = true
 source = ["fixtureforge"]
 omit = [
   "src/fixtureforge/cli.py",
-  "src/fixtureforge/datahub_integration.py",
 ]
 
 [tool.coverage.report]

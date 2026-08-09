@@ -1,0 +1,36 @@
+name: Live DataHub integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "fixtures/**"
+      - "policies/**"
+      - "scripts/agent_live_demo.sh"
+      - ".github/workflows/live-datahub.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  live-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --all-groups
+      - name: Start pinned DataHub OSS
+        run: DATAHUB_MAPPED_GMS_PORT=18080 make datahub
+      - name: Run goal-to-Git-to-DataHub agent loop
+        run: DATAHUB_GMS_URL=http://localhost:18080 make agent-live
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixtureforge-live-evidence
+          path: build/agent-live.*/run/

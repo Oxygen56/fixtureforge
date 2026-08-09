@@ -1,43 +1,40 @@
-# Video script — target 2 minutes 35 seconds
+# Live video script — target 2 minutes 40 seconds
 
-## 0:00–0:18 · Problem
+## 0:00–0:18 · Goal and problem
 
-Data developers need realistic test fixtures, but copying production rows creates
-privacy risk and hand-written fixtures drift from the catalog. FixtureForge
-turns governed DataHub metadata into merge-ready test assets without reading
-source rows.
+Show the actual terminal and type one goal: generate merge-ready source-row-free
+fixtures for the `fiction_support` assets. Explain why copied rows and drifting
+hand-written fixtures are both costly.
 
-## 0:18–0:42 · Real DataHub input
+## 0:18–0:43 · Autonomous DataHub discovery
 
-Show local DataHub OSS with customers, orders, and order_items. Highlight the
-primary and foreign keys, customer email PII tag, glossary terms, and downstream
-lineage.
+Run the live command. Show real DataHub OSS search results for accounts, tickets,
+and ticket_events. Show the agent selecting exactly those three assets through
+search plus lineage, with source rows read fixed at zero.
 
-## 0:42–1:05 · Official MCP evidence
+## 0:43–1:10 · Metadata drives code
 
-Run the judge command. Show that FixtureForge launches the official DataHub MCP
-Server with mutation disabled and calls only get_entities, list_schema_fields,
-and get_lineage. Point to source rows read: zero.
+Show PII email tags, primary and foreign keys, and the generated CSV, Parquet,
+dbt tests, and typed factory. Emphasize that the input was a goal, not a dataset
+manifest.
 
-## 1:05–1:33 · Generated developer assets
+## 1:10–1:34 · Verification that can fail
 
-Open generated CSV and Parquet fixtures, dbt schema tests, and typed Python
-factory. Show linked customer and order identifiers, fake example.test email
-addresses, enum values, and range boundaries.
+Show all checks passing, then the deliberate broken foreign key failing. Show
+the second build producing the same fingerprint.
 
-## 1:33–1:55 · Independent verification
+## 1:34–1:58 · Real Git delivery
 
-Open the report. Show all 36 DuckDB checks passing. Then show the negative
-control: FixtureForge replaces one order customer ID with a missing parent and
-the verifier catches the foreign-key violation.
+Show the branch, commit, changed-file list, and public pull request created from
+the generated support-domain bundle.
 
-## 1:55–2:18 · Determinism and writeback
+## 1:58–2:25 · Useful DataHub writeback
 
-Show the two independent builds have identical file hashes. Then show the
-approval-gated MCP writeback and the read-after-write receipt in local DataHub.
+Show the approval gate, saved Context Document, related asset, full fingerprint,
+Git delivery receipt, and successful content readback through official MCP.
 
-## 2:18–2:35 · Close
+## 2:25–2:40 · Close
 
-FixtureForge gives developers governed, reviewable fixtures before production
-data is available or appropriate. It is source-row-free, deterministic,
-Apache-2.0, and ready to extend through new metadata adapters and emitters.
+Show the agent timeline report and public CI. State the exact boundary:
+source-row-free, deterministic, and locally verified; not anonymization or
+production adoption.

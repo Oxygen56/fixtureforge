@@ -161,17 +161,22 @@ def normalize_trace(
             )
         )
 
-    lineage: list[LineageEdge] = []
+    lineage_pairs: set[tuple[str, str]] = set()
     for call in calls:
         if call["tool"] != "get_lineage":
             continue
         source = call["arguments"]["urn"]
         payload = _content_json(call)
-        results = payload.get("downstreams", {}).get("searchResults", [])
-        lineage.extend(
-            LineageEdge(upstream=source, downstream=result["entity"]["urn"])
-            for result in results
-        )
+        if call["arguments"].get("upstream", False):
+            results = payload.get("upstreams", {}).get("searchResults", [])
+            lineage_pairs.update((result["entity"]["urn"], source) for result in results)
+        else:
+            results = payload.get("downstreams", {}).get("searchResults", [])
+            lineage_pairs.update((source, result["entity"]["urn"]) for result in results)
+    lineage = [
+        LineageEdge(upstream=upstream, downstream=downstream)
+        for upstream, downstream in sorted(lineage_pairs)
+    ]
 
     return MetadataBundle(
         source="datahub-oss-v1.6.0:official-mcp-server",

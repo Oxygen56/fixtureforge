@@ -140,7 +140,7 @@ def emit_bundle(
         canonical_json(metadata.model_dump(mode="json")).encode()
     )
     manifest = {
-        "fixtureforge_version": "0.1.0",
+        "fixtureforge_version": "0.2.0",
         "seed": seed,
         "source_row_access": "none",
         "claim": "source-row-free",

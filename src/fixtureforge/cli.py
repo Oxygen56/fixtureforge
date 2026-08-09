@@ -112,6 +112,19 @@ def mcp_collect(
     console.print(json.dumps(result["summary"], indent=2))
 
 
+@app.command("mcp-discover")
+def mcp_discover(
+    query: Annotated[str, typer.Option("--query")],
+    output: Annotated[Path, typer.Option("--output")],
+    max_datasets: Annotated[int, typer.Option("--max-datasets", min=1, max=50)] = 12,
+) -> None:
+    """Discover a bounded DataHub graph from search and lineage."""
+    from fixtureforge.datahub_integration import discover_official_mcp
+
+    result = asyncio.run(discover_official_mcp(query, output, max_datasets=max_datasets))
+    console.print(json.dumps(result["discovery"], indent=2))
+
+
 @app.command("mcp-normalize")
 def mcp_normalize(
     trace: Annotated[
@@ -183,6 +196,73 @@ def report(
 
     result = build_report(bundle, mcp_trace, writeback_trace, output)
     console.print(json.dumps(result, indent=2))
+
+
+@app.command("agent-run")
+def agent_run(
+    goal: Annotated[str, typer.Option("--goal")],
+    policy: Annotated[
+        Path,
+        typer.Option("--policy", exists=True, dir_okay=False, readable=True),
+    ],
+    workspace: Annotated[Path, typer.Option("--workspace")],
+    seed: Annotated[int, typer.Option("--seed")] = 2026,
+    replay_trace: Annotated[
+        Path | None,
+        typer.Option("--replay-trace", exists=True, dir_okay=False, readable=True),
+    ] = None,
+    git_repo: Annotated[
+        Path | None,
+        typer.Option("--git-repo", file_okay=False),
+    ] = None,
+    git_destination: Annotated[Path | None, typer.Option("--git-destination")] = None,
+    approve_datahub_writeback: Annotated[
+        bool,
+        typer.Option("--approve-datahub-writeback"),
+    ] = False,
+) -> None:
+    """Run the bounded goal-to-validated-code agent."""
+    from fixtureforge.agent import run_agent
+
+    result = asyncio.run(
+        run_agent(
+            goal,
+            policy,
+            workspace,
+            seed=seed,
+            replay_trace=replay_trace,
+            git_repo=git_repo,
+            git_destination=git_destination,
+            approve_datahub_writeback=approve_datahub_writeback,
+        )
+    )
+    console.print(
+        json.dumps(
+            {
+                "status": result["status"],
+                "query": result["intent"]["datahub_query"],
+                "datasets": len(result["selected_datasets"]),
+                "evidence": result["evidence"],
+                "git_delivery": result["git_delivery"],
+                "datahub_writeback": result["datahub_writeback"],
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("agent-report")
+def agent_report(
+    run: Annotated[
+        Path,
+        typer.Option("--run", exists=True, dir_okay=False, readable=True),
+    ],
+    output: Annotated[Path, typer.Option("--output")],
+) -> None:
+    """Render a self-contained agent execution report."""
+    from fixtureforge.reporting import build_agent_report
+
+    console.print(json.dumps(build_agent_report(run, output), indent=2))
 
 
 if __name__ == "__main__":

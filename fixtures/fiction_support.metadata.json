@@ -1,0 +1,59 @@
+{
+  "contract_version": "1.0",
+  "source": "datahub-oss:mcp-recording:fiction-support",
+  "datasets": [
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.accounts,PROD)",
+      "name": "accounts",
+      "description": "Fictional SaaS customer accounts.",
+      "rows": 10,
+      "fields": [
+        {"name": "account_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},
+        {"name": "company_name", "type": "VARCHAR", "nullable": false, "glossary_terms": ["organization_name"]},
+        {"name": "owner_email", "type": "VARCHAR", "nullable": false, "unique": true, "tags": ["PII"], "glossary_terms": ["email_address"], "format": "email"},
+        {"name": "plan", "type": "VARCHAR", "nullable": false, "enum_values": ["starter", "growth", "enterprise"]},
+        {"name": "created_on", "type": "DATE", "nullable": false, "format": "date"}
+      ],
+      "primary_key": ["account_id"]
+    },
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)",
+      "name": "tickets",
+      "description": "Fictional support tickets linked to accounts.",
+      "rows": 24,
+      "fields": [
+        {"name": "ticket_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},
+        {"name": "account_id", "type": "BIGINT", "nullable": false, "tags": ["foreign_key"]},
+        {"name": "requester_email", "type": "VARCHAR", "nullable": false, "tags": ["PII"], "format": "email"},
+        {"name": "priority", "type": "VARCHAR", "nullable": false, "enum_values": ["low", "normal", "high", "urgent"]},
+        {"name": "status", "type": "VARCHAR", "nullable": false, "enum_values": ["open", "pending", "solved", "closed"]},
+        {"name": "opened_on", "type": "DATE", "nullable": false, "format": "date"}
+      ],
+      "primary_key": ["ticket_id"],
+      "foreign_keys": [{"fields": ["account_id"], "references_table": "accounts", "references_fields": ["account_id"]}]
+    },
+    {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.ticket_events,PROD)",
+      "name": "ticket_events",
+      "description": "Fictional ticket lifecycle events.",
+      "rows": 40,
+      "fields": [
+        {"name": "event_id", "type": "BIGINT", "nullable": false, "unique": true, "tags": ["primary_key"]},
+        {"name": "ticket_id", "type": "BIGINT", "nullable": false, "tags": ["foreign_key"]},
+        {"name": "event_type", "type": "VARCHAR", "nullable": false, "enum_values": ["created", "assigned", "replied", "resolved"]},
+        {"name": "event_time", "type": "TIMESTAMP", "nullable": false}
+      ],
+      "primary_key": ["event_id"],
+      "foreign_keys": [{"fields": ["ticket_id"], "references_table": "tickets", "references_fields": ["ticket_id"]}]
+    }
+  ],
+  "lineage": [
+    {"upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.accounts,PROD)", "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)"},
+    {"upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.tickets,PROD)", "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_support.ticket_events,PROD)"}
+  ],
+  "adapter_evidence": {
+    "mode": "fixture",
+    "tool_allowlist": ["search", "get_entities", "list_schema_fields", "get_lineage"],
+    "source_row_tools_called": []
+  }
+}

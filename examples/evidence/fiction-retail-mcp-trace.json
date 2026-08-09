@@ -1,0 +1,3276 @@
+{
+  "advertised_tools": [
+    {
+      "description": "Search across DataHub entities using structured full-text search.\nResults are ordered by relevance and importance - examine top results first.\n\nSEARCH SYNTAX:\n- Structured full-text search - **always start queries with /q**\n- **Recommended: Use + operator for AND** (handles punctuation better than quotes)\n- Supports full boolean logic: AND (default), OR, NOT, parentheses, field searches\n- Examples:\n  * /q user+transaction -> requires both terms (better for field names with _ or punctuation)\n  * /q point+sale+app -> requires all terms (works with point_of_sale_app_usage)\n  * /q wizard OR pet -> entities containing either term\n  * /q revenue* -> wildcard matching (revenue_2023, revenue_2024, revenue_monthly, etc.)\n  * /q tag:PII -> search by tag name\n  * /q \"exact table name\" -> exact phrase matching (use sparingly)\n  * /q (sales OR revenue) AND quarterly -> complex boolean combinations\n- Fast and precise for exact matching, technical terms, and complex queries\n- Best for: entity names, identifiers, column names, or any search needing boolean logic\n\nPAGINATION:\n- num_results: Number of results to return per page (max: 50)\n- offset: Starting position in results (default: 0)\n- Examples:\n  * First page: offset=0, num_results=10\n  * Second page: offset=10, num_results=10\n  * Third page: offset=20, num_results=10\n\nFACET EXPLORATION - Discover metadata without returning results:\n- Set num_results=0 to get ONLY facets (no search results)\n- Facets show ALL tags, glossaryTerms, platforms, domains used in the catalog\n- Example: search(query=\"*\", filter=\"entity_type = dataset\", num_results=0)\n  -> Returns facets showing all tags/glossaryTerms applied to datasets\n- Use this to discover what metadata exists before doing filtered searches\n\nTYPICAL WORKFLOW:\n1. Facet exploration: search(query=\"*\", filter=\"entity_type = dataset\", num_results=0)\n   -> Examine tags/glossaryTerms facets to see what metadata exists\n2. Filtered search: search(query=\"*\", filter=\"tag = urn:li:tag:pii\", num_results=30)\n   -> Get entities with specific tag using URN from step 1\n3. Get details: Use get_entities() on specific results\n\nFILTER SYNTAX (SQL-like WHERE clause):\n    Uses simple SQL-like syntax with AND, OR, NOT, and parentheses.\n\n    Basic filters:\n      platform = snowflake\n      entity_type = dataset\n      env = PROD\n\n    Multiple values (IN):\n      platform IN (snowflake, bigquery, redshift)\n      entity_type IN (dataset, dashboard)\n\n    Combining filters:\n      platform = snowflake AND env = PROD\n      entity_type = dataset AND platform IN (snowflake, bigquery)\n\n    OR and parentheses:\n      platform = snowflake OR platform = bigquery\n      entity_type = dataset AND (platform = snowflake OR platform = bigquery)\n\n    NOT:\n      NOT env = DEV\n      entity_type = dataset AND NOT platform = looker\n\n    Comparison operators (>, >=, <, <=):\n      columnCount > 10\n      columnCount >= 5\n      columnCount <= 100\n\n    Existence checks (IS NULL / IS NOT NULL):\n      glossary_term IS NOT NULL\n      tag IS NOT NULL\n      owner IS NULL\n\n    Complex:\n      entity_type = dataset AND env = PROD AND (platform = snowflake OR platform = bigquery)\n\n    SUPPORTED FILTER FIELDS:\n    - entity_type: dataset, dashboard, chart, corp_user, corp_group, dataProduct, etc.\n    - entity_subtype (or subtype): Table, View, Model, etc.\n    - platform: snowflake, bigquery, looker, tableau, etc.\n    - domain: full URN required, e.g. urn:li:domain:marketing\n    - container: full URN required, e.g. urn:li:container:abc123\n    - tag: full URN required, e.g. urn:li:tag:PII\n    - glossary_term: full URN required, e.g. urn:li:glossaryTerm:uuid\n    - owner: full URN required, e.g. urn:li:corpuser:alice or urn:li:corpGroup:team\n    - env: PROD, DEV, STAGING (only use if explicitly requested)\n    - status: NOT_SOFT_DELETED, ALL, ONLY_SOFT_DELETED\n    - deprecated: true or false (whether the entity is marked as deprecated)\n    - hasActiveIncidents: true or false (whether the entity has active incidents)\n    - hasFailingAssertions: true or false (whether the entity has failing assertions)\n    - columnCount: number of columns (from dataset profiling)\n\n    IMPORTANT: Domain, container, tag, glossary_term, and owner filters require\n    full URN format (urn:li:...). Search with entity_type = domain first to find\n    valid domain URNs, then use the exact URN from the results.\n\n    STRUCTURED PROPERTY FILTERS:\n    Use structuredProperties.<qualifiedName> as the field name. The qualifiedName\n    is the ID portion of the structured property URN (urn:li:structuredProperty:<qualifiedName>).\n      structuredProperties.io.acryl.privacy.retentionTime = 30\n      structuredProperties.31b94813-7667-4ae8-b93a-a72cc5e0c75b IN (Published, Certified)\n      structuredProperties.my.custom.property IS NOT NULL\n    Values are CASE-SENSITIVE. Some structured properties have fixed allowed values\n    (e.g. \"Published\", \"Certified\"). Use get_entities on the structured property URN\n    to check definition.allowedValues and match the exact casing.\n\n    Values containing special characters (spaces, =, parentheses) must be quoted:\n      tag = \"urn:li:tag:my tag\"\n      customProperties = \"key=value\"\n\nSEARCH STRATEGY EXAMPLES:\n- /q customer+behavior -> finds tables with both terms (works with customer_behavior fields)\n- /q customer OR user -> finds tables with either term\n- /q (financial OR revenue) AND metrics -> complex boolean logic\n\nSORTING - Order results by specific fields:\n- sort_by: Field name to sort by (optional)\n- sort_order: \"desc\" (default) or \"asc\"\n\nAvailable sort fields:\n    - lastOperationTime: Last modified timestamp in source system\n\n    Sorting examples:\n    - Most recently updated:\n      search(query=\"*\", filter=\"entity_type = dataset\", sort_by=\"lastOperationTime\", sort_order=\"desc\", num_results=10)\n\nNote: If sort_by is not provided, search results use default ranking by relevance and\nimportance. When using sort_by, results are strictly ordered by that field.\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "num_results": {
+            "default": 10,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer"
+          },
+          "query": {
+            "default": "*",
+            "type": "string"
+          },
+          "sort_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "desc"
+          }
+        },
+        "type": "object"
+      },
+      "name": "search"
+    },
+    {
+      "description": "Get upstream or downstream lineage for any entity, including datasets, schemaFields, dashboards, charts, etc.\n\nSet upstream to True for upstream lineage, False for downstream lineage.\nSet `column: null` to get lineage for entire dataset or for entity type other than dataset.\nSetting max_hops to 3 is equivalent to unlimited hops.\n\nFILTER SYNTAX (SQL-like WHERE clause):\n    Uses simple SQL-like syntax with AND, OR, NOT, and parentheses.\n\n    Basic filters:\n      platform = snowflake\n      entity_type = dataset\n      env = PROD\n\n    Multiple values (IN):\n      platform IN (snowflake, bigquery, redshift)\n      entity_type IN (dataset, dashboard)\n\n    Combining filters:\n      platform = snowflake AND env = PROD\n      entity_type = dataset AND platform IN (snowflake, bigquery)\n\n    OR and parentheses:\n      platform = snowflake OR platform = bigquery\n      entity_type = dataset AND (platform = snowflake OR platform = bigquery)\n\n    NOT:\n      NOT env = DEV\n      entity_type = dataset AND NOT platform = looker\n\n    Comparison operators (>, >=, <, <=):\n      columnCount > 10\n      columnCount >= 5\n      columnCount <= 100\n\n    Existence checks (IS NULL / IS NOT NULL):\n      glossary_term IS NOT NULL\n      tag IS NOT NULL\n      owner IS NULL\n\n    Complex:\n      entity_type = dataset AND env = PROD AND (platform = snowflake OR platform = bigquery)\n\n    SUPPORTED FILTER FIELDS:\n    - entity_type: dataset, dashboard, chart, corp_user, corp_group, dataProduct, etc.\n    - entity_subtype (or subtype): Table, View, Model, etc.\n    - platform: snowflake, bigquery, looker, tableau, etc.\n    - domain: full URN required, e.g. urn:li:domain:marketing\n    - container: full URN required, e.g. urn:li:container:abc123\n    - tag: full URN required, e.g. urn:li:tag:PII\n    - glossary_term: full URN required, e.g. urn:li:glossaryTerm:uuid\n    - owner: full URN required, e.g. urn:li:corpuser:alice or urn:li:corpGroup:team\n    - env: PROD, DEV, STAGING (only use if explicitly requested)\n    - status: NOT_SOFT_DELETED, ALL, ONLY_SOFT_DELETED\n    - deprecated: true or false (whether the entity is marked as deprecated)\n    - hasActiveIncidents: true or false (whether the entity has active incidents)\n    - hasFailingAssertions: true or false (whether the entity has failing assertions)\n    - columnCount: number of columns (from dataset profiling)\n\n    IMPORTANT: Domain, container, tag, glossary_term, and owner filters require\n    full URN format (urn:li:...). Search with entity_type = domain first to find\n    valid domain URNs, then use the exact URN from the results.\n\n    STRUCTURED PROPERTY FILTERS:\n    Use structuredProperties.<qualifiedName> as the field name. The qualifiedName\n    is the ID portion of the structured property URN (urn:li:structuredProperty:<qualifiedName>).\n      structuredProperties.io.acryl.privacy.retentionTime = 30\n      structuredProperties.31b94813-7667-4ae8-b93a-a72cc5e0c75b IN (Published, Certified)\n      structuredProperties.my.custom.property IS NOT NULL\n    Values are CASE-SENSITIVE. Some structured properties have fixed allowed values\n    (e.g. \"Published\", \"Certified\"). Use get_entities on the structured property URN\n    to check definition.allowedValues and match the exact casing.\n\n    Values containing special characters (spaces, =, parentheses) must be quoted:\n      tag = \"urn:li:tag:my tag\"\n      customProperties = \"key=value\"\n\nPAGINATION:\nUse offset to paginate through large lineage graphs:\n- offset=0, max_results=30 -> first 30 entities\n- offset=30, max_results=30 -> next 30 entities\n\nNote: Token budget constraints may return fewer entities than max_results.\nCheck the returned metadata (hasMore, returned, etc.) to understand truncation.\n\nQUERY PARAMETER - Search within lineage results:\nYou can filter lineage results using the `query` parameter with same /q syntax as search tool:\n- /q workspace.growthgestaofin -> find tables in specific schema\n- /q customer+transactions -> find entities with both terms\n- /q looker OR tableau -> find dashboards on either platform\n- /q * -> get all lineage results (default)\n\nExamples:\n- Find specific table in 643 downstreams: query=\"workspace.growthgestaofin.qs_retention\"\n- Find Looker dashboards in lineage: query=\"/q tag:looker\"\n- Get all results: query=\"*\" or omit parameter\n\nCOUNT PARAMETER - Control result size:\n- Default: 30 results\n- For aggregation: count=30 is sufficient (facets computed on ALL items server-side)\n- For finding specific item: Increase count or use query to filter\n- Example: count=100 for larger result sets\n\nWHEN TO USE QUERY vs COUNT:\n- User asks \"is X affected?\" -> Use query to filter for X specifically\n- Large lineage (>30 items) -> Keep count=30, use facets for aggregation\n- Need complete list -> Increase count only if total <=100\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "max_hops": {
+            "default": 1,
+            "type": "integer"
+          },
+          "max_results": {
+            "default": 30,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "type": "integer"
+          },
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "upstream": {
+            "default": true,
+            "type": "boolean"
+          },
+          "urn": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "urn"
+        ],
+        "type": "object"
+      },
+      "name": "get_lineage"
+    },
+    {
+      "description": "Get SQL queries associated with a dataset or column to understand usage patterns.\n\nThis tool retrieves actual SQL queries that reference a specific dataset or column.\nUseful for understanding how data is used, common JOIN patterns, typical filters,\nand aggregation logic.\n\nPARAMETERS:\n\nsource - Filter by query origin:\n- \"MANUAL\": Queries written by users in query editors (real SQL patterns)\n- \"SYSTEM\": Queries extracted from BI tools/dashboards (production usage)\n- null: Return both types (default)\n\nCOMMON USE CASES:\n\n1. SQL Generation - Learn real query patterns:\n   get_dataset_queries(urn, source=\"MANUAL\", count=5-10)\n   → See how users actually write SQL against this table\n   → Discover common JOINs, aggregations, filters\n   → Match organizational SQL conventions and patterns\n\n2. Production usage analysis:\n   get_dataset_queries(urn, source=\"SYSTEM\", count=20)\n   → See how dashboards and reports query this data\n   → Understand which queries run in production\n   → Identify critical query patterns\n\n3. Column usage patterns:\n   get_dataset_queries(urn, column=\"customer_id\", source=\"MANUAL\", count=5)\n   → See how a specific column is used in queries\n   → Learn filtering and grouping patterns for that column\n   → Discover relationships via JOIN patterns\n\n4. General usage exploration:\n   get_dataset_queries(urn, count=10)\n   → Get mix of manual and system queries\n   → Understand overall table usage\n\nEXAMPLES:\n\n- Get manual queries for SQL generation:\n  get_dataset_queries(\n      urn=\"urn:li:dataset:(urn:li:dataPlatform:snowflake,prod.sales.orders,PROD)\",\n      source=\"MANUAL\",\n      count=10\n  )\n\n- Get dashboard queries (production usage):\n  get_dataset_queries(\n      urn=\"urn:li:dataset:(...)\",\n      source=\"SYSTEM\",\n      count=20\n  )\n\n- Column-specific query patterns:\n  get_dataset_queries(\n      urn=\"urn:li:dataset:(...)\",\n      column=\"created_at\",\n      source=\"MANUAL\",\n      count=5\n  )\n\nRESPONSE STRUCTURE:\n- total: Total number of queries matching criteria\n- start: Starting offset\n- count: Number of results returned\n- queries: Array of query objects with:\n  - urn: Query identifier\n  - properties.statement.value: The actual SQL text\n  - properties.statement.language: Query language (SQL, etc.)\n  - properties.source: MANUAL or SYSTEM\n  - properties.name: Optional query name\n  - platform: Source platform\n  - subjects: Referenced datasets/columns (deduplicated to dataset URNs)\n\nANALYZING RETRIEVED QUERIES:\nOnce you retrieve queries, examine the SQL statements to identify:\n- JOIN patterns: Which tables are joined? On what keys?\n- Aggregations: Common SUM, COUNT, AVG, GROUP BY patterns\n- Filters: Typical WHERE clauses, date range logic\n- Column usage: Which columns appear frequently vs rarely\n- CTEs and subqueries: Complex query structures\n\nBEST PRACTICES:\n- For SQL generation: Use source=\"MANUAL\" (count=5-10) to see real user patterns\n- For production analysis: Use source=\"SYSTEM\" to see dashboard/report queries\n- Start with moderate count (5-10) to avoid overwhelming context\n- If no queries found (total=0), proceed without query examples - not all tables have queries\n- Parse the SQL statements yourself to find patterns - they are not full-text searchable\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "count": {
+            "default": 10,
+            "type": "integer"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "MANUAL",
+                  "SYSTEM"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "start": {
+            "default": 0,
+            "type": "integer"
+          },
+          "urn": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "urn"
+        ],
+        "type": "object"
+      },
+      "name": "get_dataset_queries"
+    },
+    {
+      "description": "Get detailed information about one or more entities by their DataHub URNs.\n\nIMPORTANT: Pass an array of URNs to retrieve multiple entities in a single call - this is much\nmore efficient than calling this tool multiple times. When examining search results, always pass\nan array with the top 3-10 result URNs to compare and find the best match.\n\nAccepts an array of URNs or a single URN. Supports all entity types including datasets,\nassertions, incidents, dashboards, charts, users, groups, and more. The response fields vary\nbased on the entity type.\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "urns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "urns"
+        ],
+        "type": "object"
+      },
+      "name": "get_entities"
+    },
+    {
+      "description": "List schema fields for a dataset, with optional keyword filtering and pagination.\n\nUseful when schema fields were truncated in search results (schemaFieldsTruncated present)\nand you need to explore specific columns. Supports pagination for large schemas.\n\nArgs:\n    urn: Dataset URN\n    keywords: Optional list of keywords to filter schema fields (OR matching).\n             - Single keyword: Treated as one keyword (NOT split on whitespace). Use for field names or exact phrases.\n             - Multiple keywords: Multiple keywords, matches any (OR logic).\n             - None or empty list: Returns all fields in priority order (same as get_entities).\n             Matches against fieldPath, description, label, tags, and glossary terms.\n             Matching fields are returned first, sorted by match count.\n    limit: Maximum number of fields to return (default: 100)\n    offset: Number of fields to skip for pagination (default: 0)\n\nReturns:\n    Dictionary with:\n    - urn: The dataset URN\n    - fields: List of schema fields (paginated)\n    - totalFields: Total number of fields in the schema\n    - returned: Number of fields actually returned\n    - remainingCount: Number of fields not included after offset (accounts for limit and token budget)\n    - matchingCount: Number of fields that matched keywords (if keywords provided, None otherwise)\n    - offset: The offset used\n\nExamples:\n    # Single keyword (list) - search for exact field name or phrase\n    list_schema_fields(urn=\"urn:li:dataset:(...)\", keywords=[\"user_email\"])\n    # Returns fields matching \"user_email\" (like user_email_address, primary_user_email)\n\n    # Multiple keywords (list) - OR matching\n    list_schema_fields(urn=\"urn:li:dataset:(...)\", keywords=[\"email\", \"user\"])\n    # Returns fields containing \"email\" OR \"user\" (user_email, contact_email, user_id, etc.)\n\n    # Pagination through all fields\n    list_schema_fields(urn=\"urn:li:dataset:(...)\", limit=100, offset=0)   # First 100\n    list_schema_fields(urn=\"urn:li:dataset:(...)\", limit=100, offset=100) # Next 100\n\n    # Combine filtering + pagination\n    list_schema_fields(urn=\"urn:li:dataset:(...)\", keywords=[\"user\"], limit=50, offset=0)\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "keywords": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional list of keywords to filter schema fields (OR matching).\n     - Single keyword: Treated as one keyword (NOT split on whitespace). Use for field names or exact phrases.\n     - Multiple keywords: Multiple keywords, matches any (OR logic).\n     - None or empty list: Returns all fields in priority order (same as get_entities).\n     Matches against fieldPath, description, label, tags, and glossary terms.\n     Matching fields are returned first, sorted by match count."
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum number of fields to return (default: 100)",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Number of fields to skip for pagination (default: 0)",
+            "type": "integer"
+          },
+          "urn": {
+            "description": "Dataset URN",
+            "type": "string"
+          }
+        },
+        "required": [
+          "urn"
+        ],
+        "type": "object"
+      },
+      "name": "list_schema_fields"
+    },
+    {
+      "description": "Get detailed lineage path(s) between two specific entities or columns.\n\nReturns the paths array from searchAcrossLineage, showing the exact transformation\nchain(s) including intermediate entities, columns, and transformation query URNs.\n\nUnlike get_lineage() which returns all lineage targets with compact lineageColumns,\nthis tool focuses on ONE specific target and returns detailed path information.\n\nArgs:\n    source_urn: URN of the source dataset\n    target_urn: URN of the target dataset\n    source_column: Optional column name in source dataset\n    target_column: Optional column name in target dataset (required if source_column provided)\n    direction: Optional direction to search. If None (default), automatically discovers\n              the path by trying downstream first, then upstream. Specify \"downstream\" or\n              \"upstream\" explicitly for better performance if you know the direction.\n\nReturns:\n    Dictionary with:\n    - source: Source entity/column info\n    - target: Target entity/column info\n    - paths: Array of path objects from GraphQL (with QUERY URNs)\n    - pathCount: Number of paths found\n\nExamples:\n    # Column-level paths\n    paths_result = get_lineage_paths_between(\n        source_urn=\"urn:li:dataset:(urn:li:dataPlatform:snowflake,db.schema.base_table,PROD)\",\n        target_urn=\"urn:li:dataset:(urn:li:dataPlatform:snowflake,db.schema.final_table,PROD)\",\n        source_column=\"user_id\",\n        target_column=\"customer_id\"\n    )\n    # Returns paths with QUERY URNs showing transformation chain\n\n    # Fetch SQL for specific query of interest\n    query_details = get_entities(paths_result[\"paths\"][0][\"path\"][1][\"urn\"])\n\n    # Dataset-level paths (auto-discover direction)\n    get_lineage_paths_between(\n        source_urn=\"urn:li:dataset:(...):base_table\",\n        target_urn=\"urn:li:dataset:(...):final_table\"\n    )\n\n    # Explicit direction for better performance\n    get_lineage_paths_between(\n        source_urn=\"urn:li:dataset:(...):base_table\",\n        target_urn=\"urn:li:dataset:(...):final_table\",\n        direction=\"downstream\"\n    )\n",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "direction": {
+            "anyOf": [
+              {
+                "enum": [
+                  "upstream",
+                  "downstream"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional direction to search. If None (default), automatically discovers\n      the path by trying downstream first, then upstream. Specify \"downstream\" or\n      \"upstream\" explicitly for better performance if you know the direction."
+          },
+          "source_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional column name in source dataset"
+          },
+          "source_urn": {
+            "description": "URN of the source dataset",
+            "type": "string"
+          },
+          "target_column": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional column name in target dataset (required if source_column provided)"
+          },
+          "target_urn": {
+            "description": "URN of the target dataset",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_urn",
+          "target_urn"
+        ],
+        "type": "object"
+      },
+      "name": "get_lineage_paths_between"
+    }
+  ],
+  "calls": [
+    {
+      "arguments": {
+        "num_results": 12,
+        "offset": 0,
+        "query": "FixtureForge"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "count": 12,
+              "facets": [
+                {
+                  "aggregations": [
+                    {
+                      "count": 4,
+                      "value": "GLOSSARY_TERM"
+                    },
+                    {
+                      "count": 3,
+                      "value": "TAG"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DOCUMENT␞Context"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DATASET"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DOCUMENT"
+                    }
+                  ],
+                  "displayName": "Type␞Sub Type",
+                  "field": "_entityType␞typeNames"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 4,
+                      "value": "GLOSSARY_TERM"
+                    },
+                    {
+                      "count": 3,
+                      "value": "TAG"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DATASET"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DOCUMENT"
+                    },
+                    {
+                      "count": 0,
+                      "value": "CORP_USER"
+                    }
+                  ],
+                  "displayName": "Type",
+                  "field": "_entityType"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 3,
+                      "value": "PROD"
+                    }
+                  ],
+                  "displayName": "Environment",
+                  "field": "origin"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 3,
+                      "value": "urn:li:corpuser:__datahub_system"
+                    }
+                  ],
+                  "displayName": "Owned By",
+                  "field": "owners"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 3,
+                      "value": "urn:li:dataPlatform:postgres"
+                    }
+                  ],
+                  "displayName": "Platform",
+                  "field": "platform"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 3,
+                      "value": "urn:li:tag:fixture-generation"
+                    },
+                    {
+                      "count": 3,
+                      "value": "urn:li:tag:source-row-free"
+                    },
+                    {
+                      "count": 3,
+                      "value": "urn:li:tag:data-quality"
+                    }
+                  ],
+                  "displayName": "Tagged With",
+                  "field": "tags"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 3,
+                      "value": "Context"
+                    }
+                  ],
+                  "displayName": "Sub Type",
+                  "field": "typeNames"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 0,
+                      "value": "true"
+                    }
+                  ],
+                  "displayName": "removed",
+                  "field": "removed"
+                },
+                {
+                  "aggregations": [
+                    {
+                      "count": 4,
+                      "value": "GLOSSARY_TERM"
+                    },
+                    {
+                      "count": 3,
+                      "value": "TAG"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DATASET"
+                    },
+                    {
+                      "count": 3,
+                      "value": "DOCUMENT"
+                    },
+                    {
+                      "count": 0,
+                      "value": "CORP_USER"
+                    }
+                  ],
+                  "displayName": "Type",
+                  "field": "entity"
+                }
+              ],
+              "searchResults": [
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "FixtureForge · customers"
+                    },
+                    "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+                  }
+                },
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "FixtureForge · order_items"
+                    },
+                    "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+                  }
+                },
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "FixtureForge · orders"
+                    },
+                    "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:tag:PII"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:tag:foreign_key"
+                  }
+                },
+                {
+                  "entity": {
+                    "urn": "urn:li:tag:primary_key"
+                  }
+                },
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "Email Address"
+                    },
+                    "urn": "urn:li:glossaryTerm:email_address"
+                  }
+                },
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "Gross Order Value"
+                    },
+                    "urn": "urn:li:glossaryTerm:gross_order_value"
+                  }
+                },
+                {
+                  "entity": {
+                    "properties": {
+                      "name": "Person Name"
+                    },
+                    "urn": "urn:li:glossaryTerm:person_name"
+                  }
+                }
+              ],
+              "start": 0,
+              "total": 13
+            },
+            "text": "{\"start\":0,\"count\":12,\"total\":13,\"searchResults\":[{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)\",\"properties\":{\"name\":\"FixtureForge · customers\"}}},{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)\",\"properties\":{\"name\":\"FixtureForge · order_items\"}}},{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"properties\":{\"name\":\"FixtureForge · orders\"}}},{\"entity\":{\"urn\":\"urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7\"}},{\"entity\":{\"urn\":\"urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad\"}},{\"entity\":{\"urn\":\"urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55\"}},{\"entity\":{\"urn\":\"urn:li:tag:PII\"}},{\"entity\":{\"urn\":\"urn:li:tag:foreign_key\"}},{\"entity\":{\"urn\":\"urn:li:tag:primary_key\"}},{\"entity\":{\"urn\":\"urn:li:glossaryTerm:email_address\",\"properties\":{\"name\":\"Email Address\"}}},{\"entity\":{\"urn\":\"urn:li:glossaryTerm:gross_order_value\",\"properties\":{\"name\":\"Gross Order Value\"}}},{\"entity\":{\"urn\":\"urn:li:glossaryTerm:person_name\",\"properties\":{\"name\":\"Person Name\"}}}],\"facets\":[{\"field\":\"_entityType␞typeNames\",\"displayName\":\"Type␞Sub Type\",\"aggregations\":[{\"value\":\"GLOSSARY_TERM\",\"count\":4},{\"value\":\"TAG\",\"count\":3},{\"value\":\"DOCUMENT␞Context\",\"count\":3},{\"value\":\"DATASET\",\"count\":3},{\"value\":\"DOCUMENT\",\"count\":3}]},{\"field\":\"_entityType\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"GLOSSARY_TERM\",\"count\":4},{\"value\":\"TAG\",\"count\":3},{\"value\":\"DATASET\",\"count\":3},{\"value\":\"DOCUMENT\",\"count\":3},{\"value\":\"CORP_USER\",\"count\":0}]},{\"field\":\"origin\",\"displayName\":\"Environment\",\"aggregations\":[{\"value\":\"PROD\",\"count\":3}]},{\"field\":\"owners\",\"displayName\":\"Owned By\",\"aggregations\":[{\"value\":\"urn:li:corpuser:__datahub_system\",\"count\":3}]},{\"field\":\"platform\",\"displayName\":\"Platform\",\"aggregations\":[{\"value\":\"urn:li:dataPlatform:postgres\",\"count\":3}]},{\"field\":\"tags\",\"displayName\":\"Tagged With\",\"aggregations\":[{\"value\":\"urn:li:tag:fixture-generation\",\"count\":3},{\"value\":\"urn:li:tag:source-row-free\",\"count\":3},{\"value\":\"urn:li:tag:data-quality\",\"count\":3}]},{\"field\":\"typeNames\",\"displayName\":\"Sub Type\",\"aggregations\":[{\"value\":\"Context\",\"count\":3}]},{\"field\":\"removed\",\"displayName\":\"removed\",\"aggregations\":[{\"value\":\"true\",\"count\":0}]},{\"field\":\"entity\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"GLOSSARY_TERM\",\"count\":4},{\"value\":\"TAG\",\"count\":3},{\"value\":\"DATASET\",\"count\":3},{\"value\":\"DOCUMENT\",\"count\":3},{\"value\":\"CORP_USER\",\"count\":0}]}]}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "count": 12,
+          "facets": [
+            {
+              "aggregations": [
+                {
+                  "count": 4,
+                  "value": "GLOSSARY_TERM"
+                },
+                {
+                  "count": 3,
+                  "value": "TAG"
+                },
+                {
+                  "count": 3,
+                  "value": "DOCUMENT␞Context"
+                },
+                {
+                  "count": 3,
+                  "value": "DATASET"
+                },
+                {
+                  "count": 3,
+                  "value": "DOCUMENT"
+                }
+              ],
+              "displayName": "Type␞Sub Type",
+              "field": "_entityType␞typeNames"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 4,
+                  "value": "GLOSSARY_TERM"
+                },
+                {
+                  "count": 3,
+                  "value": "TAG"
+                },
+                {
+                  "count": 3,
+                  "value": "DATASET"
+                },
+                {
+                  "count": 3,
+                  "value": "DOCUMENT"
+                },
+                {
+                  "count": 0,
+                  "value": "CORP_USER"
+                }
+              ],
+              "displayName": "Type",
+              "field": "_entityType"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 3,
+                  "value": "PROD"
+                }
+              ],
+              "displayName": "Environment",
+              "field": "origin"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 3,
+                  "value": "urn:li:corpuser:__datahub_system"
+                }
+              ],
+              "displayName": "Owned By",
+              "field": "owners"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 3,
+                  "value": "urn:li:dataPlatform:postgres"
+                }
+              ],
+              "displayName": "Platform",
+              "field": "platform"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 3,
+                  "value": "urn:li:tag:fixture-generation"
+                },
+                {
+                  "count": 3,
+                  "value": "urn:li:tag:source-row-free"
+                },
+                {
+                  "count": 3,
+                  "value": "urn:li:tag:data-quality"
+                }
+              ],
+              "displayName": "Tagged With",
+              "field": "tags"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 3,
+                  "value": "Context"
+                }
+              ],
+              "displayName": "Sub Type",
+              "field": "typeNames"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 0,
+                  "value": "true"
+                }
+              ],
+              "displayName": "removed",
+              "field": "removed"
+            },
+            {
+              "aggregations": [
+                {
+                  "count": 4,
+                  "value": "GLOSSARY_TERM"
+                },
+                {
+                  "count": 3,
+                  "value": "TAG"
+                },
+                {
+                  "count": 3,
+                  "value": "DATASET"
+                },
+                {
+                  "count": 3,
+                  "value": "DOCUMENT"
+                },
+                {
+                  "count": 0,
+                  "value": "CORP_USER"
+                }
+              ],
+              "displayName": "Type",
+              "field": "entity"
+            }
+          ],
+          "searchResults": [
+            {
+              "entity": {
+                "properties": {
+                  "name": "FixtureForge · customers"
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+              }
+            },
+            {
+              "entity": {
+                "properties": {
+                  "name": "FixtureForge · order_items"
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+              }
+            },
+            {
+              "entity": {
+                "properties": {
+                  "name": "FixtureForge · orders"
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:tag:PII"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:tag:foreign_key"
+              }
+            },
+            {
+              "entity": {
+                "urn": "urn:li:tag:primary_key"
+              }
+            },
+            {
+              "entity": {
+                "properties": {
+                  "name": "Email Address"
+                },
+                "urn": "urn:li:glossaryTerm:email_address"
+              }
+            },
+            {
+              "entity": {
+                "properties": {
+                  "name": "Gross Order Value"
+                },
+                "urn": "urn:li:glossaryTerm:gross_order_value"
+              }
+            },
+            {
+              "entity": {
+                "properties": {
+                  "name": "Person Name"
+                },
+                "urn": "urn:li:glossaryTerm:person_name"
+              }
+            }
+          ],
+          "start": 0,
+          "total": 13
+        }
+      },
+      "tool": "search"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": true,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "upstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  }
+                ],
+                "total": 0
+              }
+            },
+            "text": "{\"upstreams\":{\"total\":0,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]}]}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "upstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              }
+            ],
+            "total": 0
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": false,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "downstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "_entityType"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "entity": {
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "value": "urn:li:dataPlatform:postgres"
+                      }
+                    ],
+                    "displayName": "Platform",
+                    "field": "platform"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "PROD"
+                      }
+                    ],
+                    "displayName": "Environment",
+                    "field": "origin"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type␞Sub Type",
+                    "field": "_entityType␞typeNames"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "true"
+                      }
+                    ],
+                    "displayName": "removed",
+                    "field": "removed"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "entity"
+                  }
+                ],
+                "hasMore": false,
+                "offset": 0,
+                "returned": 1,
+                "searchResults": [
+                  {
+                    "degree": 1,
+                    "entity": {
+                      "editableProperties": {
+                        "description": "Fictional retail orders linked to customers."
+                      },
+                      "health": [
+                        {
+                          "status": "PASS",
+                          "type": "INCIDENTS"
+                        }
+                      ],
+                      "name": "FixtureForge · orders",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "properties": {
+                        "customProperties": [
+                          {
+                            "key": "fixtureforge_source_rows",
+                            "value": "never accessed"
+                          },
+                          {
+                            "key": "fixtureforge_source",
+                            "value": "fictional metadata only"
+                          }
+                        ],
+                        "name": "FixtureForge · orders"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                    }
+                  }
+                ],
+                "total": 1
+              }
+            },
+            "text": "{\"downstreams\":{\"total\":1,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]},{\"field\":\"_entityType\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"platform\",\"displayName\":\"Platform\",\"aggregations\":[{\"value\":\"urn:li:dataPlatform:postgres\",\"count\":1,\"entity\":{\"urn\":\"urn:li:dataPlatform:postgres\"}}]},{\"field\":\"origin\",\"displayName\":\"Environment\",\"aggregations\":[{\"value\":\"PROD\",\"count\":1}]},{\"field\":\"_entityType␞typeNames\",\"displayName\":\"Type␞Sub Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"removed\",\"displayName\":\"removed\",\"aggregations\":[{\"value\":\"true\",\"count\":0}]},{\"field\":\"entity\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]}],\"searchResults\":[{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"type\":\"DATASET\",\"name\":\"FixtureForge · orders\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional retail orders linked to customers.\"},\"properties\":{\"name\":\"FixtureForge · orders\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}]},\"degree\":1}],\"offset\":0,\"returned\":1,\"hasMore\":false}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "downstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "_entityType"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "entity": {
+                      "urn": "urn:li:dataPlatform:postgres"
+                    },
+                    "value": "urn:li:dataPlatform:postgres"
+                  }
+                ],
+                "displayName": "Platform",
+                "field": "platform"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "PROD"
+                  }
+                ],
+                "displayName": "Environment",
+                "field": "origin"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type␞Sub Type",
+                "field": "_entityType␞typeNames"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "true"
+                  }
+                ],
+                "displayName": "removed",
+                "field": "removed"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "entity"
+              }
+            ],
+            "hasMore": false,
+            "offset": 0,
+            "returned": 1,
+            "searchResults": [
+              {
+                "degree": 1,
+                "entity": {
+                  "editableProperties": {
+                    "description": "Fictional retail orders linked to customers."
+                  },
+                  "health": [
+                    {
+                      "status": "PASS",
+                      "type": "INCIDENTS"
+                    }
+                  ],
+                  "name": "FixtureForge · orders",
+                  "platform": {
+                    "name": "postgres",
+                    "urn": "urn:li:dataPlatform:postgres"
+                  },
+                  "properties": {
+                    "customProperties": [
+                      {
+                        "key": "fixtureforge_source_rows",
+                        "value": "never accessed"
+                      },
+                      {
+                        "key": "fixtureforge_source",
+                        "value": "fictional metadata only"
+                      }
+                    ],
+                    "name": "FixtureForge · orders"
+                  },
+                  "type": "DATASET",
+                  "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                }
+              }
+            ],
+            "total": 1
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": true,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "upstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "_entityType"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "entity": {
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "value": "urn:li:dataPlatform:postgres"
+                      }
+                    ],
+                    "displayName": "Platform",
+                    "field": "platform"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "PROD"
+                      }
+                    ],
+                    "displayName": "Environment",
+                    "field": "origin"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type␞Sub Type",
+                    "field": "_entityType␞typeNames"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "true"
+                      }
+                    ],
+                    "displayName": "removed",
+                    "field": "removed"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "entity"
+                  }
+                ],
+                "hasMore": false,
+                "offset": 0,
+                "returned": 1,
+                "searchResults": [
+                  {
+                    "degree": 1,
+                    "entity": {
+                      "editableProperties": {
+                        "description": "Fictional retail orders linked to customers."
+                      },
+                      "health": [
+                        {
+                          "status": "PASS",
+                          "type": "INCIDENTS"
+                        }
+                      ],
+                      "name": "FixtureForge · orders",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "properties": {
+                        "customProperties": [
+                          {
+                            "key": "fixtureforge_source_rows",
+                            "value": "never accessed"
+                          },
+                          {
+                            "key": "fixtureforge_source",
+                            "value": "fictional metadata only"
+                          }
+                        ],
+                        "name": "FixtureForge · orders"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                    }
+                  }
+                ],
+                "total": 1
+              }
+            },
+            "text": "{\"upstreams\":{\"total\":1,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]},{\"field\":\"_entityType\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"platform\",\"displayName\":\"Platform\",\"aggregations\":[{\"value\":\"urn:li:dataPlatform:postgres\",\"count\":1,\"entity\":{\"urn\":\"urn:li:dataPlatform:postgres\"}}]},{\"field\":\"origin\",\"displayName\":\"Environment\",\"aggregations\":[{\"value\":\"PROD\",\"count\":1}]},{\"field\":\"_entityType␞typeNames\",\"displayName\":\"Type␞Sub Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"removed\",\"displayName\":\"removed\",\"aggregations\":[{\"value\":\"true\",\"count\":0}]},{\"field\":\"entity\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]}],\"searchResults\":[{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"type\":\"DATASET\",\"name\":\"FixtureForge · orders\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional retail orders linked to customers.\"},\"properties\":{\"name\":\"FixtureForge · orders\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}]},\"degree\":1}],\"offset\":0,\"returned\":1,\"hasMore\":false}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "upstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "_entityType"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "entity": {
+                      "urn": "urn:li:dataPlatform:postgres"
+                    },
+                    "value": "urn:li:dataPlatform:postgres"
+                  }
+                ],
+                "displayName": "Platform",
+                "field": "platform"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "PROD"
+                  }
+                ],
+                "displayName": "Environment",
+                "field": "origin"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type␞Sub Type",
+                "field": "_entityType␞typeNames"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "true"
+                  }
+                ],
+                "displayName": "removed",
+                "field": "removed"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "entity"
+              }
+            ],
+            "hasMore": false,
+            "offset": 0,
+            "returned": 1,
+            "searchResults": [
+              {
+                "degree": 1,
+                "entity": {
+                  "editableProperties": {
+                    "description": "Fictional retail orders linked to customers."
+                  },
+                  "health": [
+                    {
+                      "status": "PASS",
+                      "type": "INCIDENTS"
+                    }
+                  ],
+                  "name": "FixtureForge · orders",
+                  "platform": {
+                    "name": "postgres",
+                    "urn": "urn:li:dataPlatform:postgres"
+                  },
+                  "properties": {
+                    "customProperties": [
+                      {
+                        "key": "fixtureforge_source_rows",
+                        "value": "never accessed"
+                      },
+                      {
+                        "key": "fixtureforge_source",
+                        "value": "fictional metadata only"
+                      }
+                    ],
+                    "name": "FixtureForge · orders"
+                  },
+                  "type": "DATASET",
+                  "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                }
+              }
+            ],
+            "total": 1
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": false,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "downstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  }
+                ],
+                "total": 0
+              }
+            },
+            "text": "{\"downstreams\":{\"total\":0,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]}]}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "downstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              }
+            ],
+            "total": 0
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": true,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "upstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "_entityType"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "entity": {
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "value": "urn:li:dataPlatform:postgres"
+                      }
+                    ],
+                    "displayName": "Platform",
+                    "field": "platform"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "PROD"
+                      }
+                    ],
+                    "displayName": "Environment",
+                    "field": "origin"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type␞Sub Type",
+                    "field": "_entityType␞typeNames"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "true"
+                      }
+                    ],
+                    "displayName": "removed",
+                    "field": "removed"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "entity"
+                  }
+                ],
+                "hasMore": false,
+                "offset": 0,
+                "returned": 1,
+                "searchResults": [
+                  {
+                    "degree": 1,
+                    "entity": {
+                      "editableProperties": {
+                        "description": "Fictional retail dataset used by the FixtureForge local demonstration.\n\n## FixtureForge evidence\n\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\n- Seed: 2026\n- Validation passed: True\n- Negative control detected: True\n- Source rows read: 0"
+                      },
+                      "health": [
+                        {
+                          "status": "PASS",
+                          "type": "INCIDENTS"
+                        }
+                      ],
+                      "name": "FixtureForge · customers",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "properties": {
+                        "customProperties": [
+                          {
+                            "key": "fixtureforge_source_rows",
+                            "value": "never accessed"
+                          },
+                          {
+                            "key": "fixtureforge_source",
+                            "value": "fictional metadata only"
+                          }
+                        ],
+                        "name": "FixtureForge · customers"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+                    }
+                  }
+                ],
+                "total": 1
+              }
+            },
+            "text": "{\"upstreams\":{\"total\":1,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]},{\"field\":\"_entityType\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"platform\",\"displayName\":\"Platform\",\"aggregations\":[{\"value\":\"urn:li:dataPlatform:postgres\",\"count\":1,\"entity\":{\"urn\":\"urn:li:dataPlatform:postgres\"}}]},{\"field\":\"origin\",\"displayName\":\"Environment\",\"aggregations\":[{\"value\":\"PROD\",\"count\":1}]},{\"field\":\"_entityType␞typeNames\",\"displayName\":\"Type␞Sub Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"removed\",\"displayName\":\"removed\",\"aggregations\":[{\"value\":\"true\",\"count\":0}]},{\"field\":\"entity\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]}],\"searchResults\":[{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)\",\"type\":\"DATASET\",\"name\":\"FixtureForge · customers\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional retail dataset used by the FixtureForge local demonstration.\\n\\n## FixtureForge evidence\\n\\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\\n- Seed: 2026\\n- Validation passed: True\\n- Negative control detected: True\\n- Source rows read: 0\"},\"properties\":{\"name\":\"FixtureForge · customers\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}]},\"degree\":1}],\"offset\":0,\"returned\":1,\"hasMore\":false}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "upstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "_entityType"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "entity": {
+                      "urn": "urn:li:dataPlatform:postgres"
+                    },
+                    "value": "urn:li:dataPlatform:postgres"
+                  }
+                ],
+                "displayName": "Platform",
+                "field": "platform"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "PROD"
+                  }
+                ],
+                "displayName": "Environment",
+                "field": "origin"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type␞Sub Type",
+                "field": "_entityType␞typeNames"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "true"
+                  }
+                ],
+                "displayName": "removed",
+                "field": "removed"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "entity"
+              }
+            ],
+            "hasMore": false,
+            "offset": 0,
+            "returned": 1,
+            "searchResults": [
+              {
+                "degree": 1,
+                "entity": {
+                  "editableProperties": {
+                    "description": "Fictional retail dataset used by the FixtureForge local demonstration.\n\n## FixtureForge evidence\n\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\n- Seed: 2026\n- Validation passed: True\n- Negative control detected: True\n- Source rows read: 0"
+                  },
+                  "health": [
+                    {
+                      "status": "PASS",
+                      "type": "INCIDENTS"
+                    }
+                  ],
+                  "name": "FixtureForge · customers",
+                  "platform": {
+                    "name": "postgres",
+                    "urn": "urn:li:dataPlatform:postgres"
+                  },
+                  "properties": {
+                    "customProperties": [
+                      {
+                        "key": "fixtureforge_source_rows",
+                        "value": "never accessed"
+                      },
+                      {
+                        "key": "fixtureforge_source",
+                        "value": "fictional metadata only"
+                      }
+                    ],
+                    "name": "FixtureForge · customers"
+                  },
+                  "type": "DATASET",
+                  "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+                }
+              }
+            ],
+            "total": 1
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "max_hops": 1,
+        "max_results": 100,
+        "upstream": false,
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "downstreams": {
+                "facets": [
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "1"
+                      },
+                      {
+                        "count": 0,
+                        "value": "2"
+                      },
+                      {
+                        "count": 0,
+                        "value": "3+"
+                      }
+                    ],
+                    "displayName": "Degree of Dependencies",
+                    "field": "degree"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "_entityType"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "entity": {
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "value": "urn:li:dataPlatform:postgres"
+                      }
+                    ],
+                    "displayName": "Platform",
+                    "field": "platform"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "PROD"
+                      }
+                    ],
+                    "displayName": "Environment",
+                    "field": "origin"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type␞Sub Type",
+                    "field": "_entityType␞typeNames"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 0,
+                        "value": "true"
+                      }
+                    ],
+                    "displayName": "removed",
+                    "field": "removed"
+                  },
+                  {
+                    "aggregations": [
+                      {
+                        "count": 1,
+                        "value": "DATASET"
+                      }
+                    ],
+                    "displayName": "Type",
+                    "field": "entity"
+                  }
+                ],
+                "hasMore": false,
+                "offset": 0,
+                "returned": 1,
+                "searchResults": [
+                  {
+                    "degree": 1,
+                    "entity": {
+                      "editableProperties": {
+                        "description": "Fictional line items linked to orders."
+                      },
+                      "health": [
+                        {
+                          "status": "PASS",
+                          "type": "INCIDENTS"
+                        }
+                      ],
+                      "name": "FixtureForge · order_items",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "properties": {
+                        "customProperties": [
+                          {
+                            "key": "fixtureforge_source_rows",
+                            "value": "never accessed"
+                          },
+                          {
+                            "key": "fixtureforge_source",
+                            "value": "fictional metadata only"
+                          }
+                        ],
+                        "name": "FixtureForge · order_items"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+                    }
+                  }
+                ],
+                "total": 1
+              }
+            },
+            "text": "{\"downstreams\":{\"total\":1,\"facets\":[{\"field\":\"degree\",\"displayName\":\"Degree of Dependencies\",\"aggregations\":[{\"value\":\"1\",\"count\":0},{\"value\":\"2\",\"count\":0},{\"value\":\"3+\",\"count\":0}]},{\"field\":\"_entityType\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"platform\",\"displayName\":\"Platform\",\"aggregations\":[{\"value\":\"urn:li:dataPlatform:postgres\",\"count\":1,\"entity\":{\"urn\":\"urn:li:dataPlatform:postgres\"}}]},{\"field\":\"origin\",\"displayName\":\"Environment\",\"aggregations\":[{\"value\":\"PROD\",\"count\":1}]},{\"field\":\"_entityType␞typeNames\",\"displayName\":\"Type␞Sub Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]},{\"field\":\"removed\",\"displayName\":\"removed\",\"aggregations\":[{\"value\":\"true\",\"count\":0}]},{\"field\":\"entity\",\"displayName\":\"Type\",\"aggregations\":[{\"value\":\"DATASET\",\"count\":1}]}],\"searchResults\":[{\"entity\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)\",\"type\":\"DATASET\",\"name\":\"FixtureForge · order_items\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional line items linked to orders.\"},\"properties\":{\"name\":\"FixtureForge · order_items\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}]},\"degree\":1}],\"offset\":0,\"returned\":1,\"hasMore\":false}}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "downstreams": {
+            "facets": [
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "1"
+                  },
+                  {
+                    "count": 0,
+                    "value": "2"
+                  },
+                  {
+                    "count": 0,
+                    "value": "3+"
+                  }
+                ],
+                "displayName": "Degree of Dependencies",
+                "field": "degree"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "_entityType"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "entity": {
+                      "urn": "urn:li:dataPlatform:postgres"
+                    },
+                    "value": "urn:li:dataPlatform:postgres"
+                  }
+                ],
+                "displayName": "Platform",
+                "field": "platform"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "PROD"
+                  }
+                ],
+                "displayName": "Environment",
+                "field": "origin"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type␞Sub Type",
+                "field": "_entityType␞typeNames"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 0,
+                    "value": "true"
+                  }
+                ],
+                "displayName": "removed",
+                "field": "removed"
+              },
+              {
+                "aggregations": [
+                  {
+                    "count": 1,
+                    "value": "DATASET"
+                  }
+                ],
+                "displayName": "Type",
+                "field": "entity"
+              }
+            ],
+            "hasMore": false,
+            "offset": 0,
+            "returned": 1,
+            "searchResults": [
+              {
+                "degree": 1,
+                "entity": {
+                  "editableProperties": {
+                    "description": "Fictional line items linked to orders."
+                  },
+                  "health": [
+                    {
+                      "status": "PASS",
+                      "type": "INCIDENTS"
+                    }
+                  ],
+                  "name": "FixtureForge · order_items",
+                  "platform": {
+                    "name": "postgres",
+                    "urn": "urn:li:dataPlatform:postgres"
+                  },
+                  "properties": {
+                    "customProperties": [
+                      {
+                        "key": "fixtureforge_source_rows",
+                        "value": "never accessed"
+                      },
+                      {
+                        "key": "fixtureforge_source",
+                        "value": "fictional metadata only"
+                      }
+                    ],
+                    "name": "FixtureForge · order_items"
+                  },
+                  "type": "DATASET",
+                  "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+                }
+              }
+            ],
+            "total": 1
+          }
+        }
+      },
+      "tool": "get_lineage"
+    },
+    {
+      "arguments": {
+        "urns": [
+          "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)",
+          "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+        ]
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": [
+              {
+                "editableProperties": {
+                  "description": "Fictional retail dataset used by the FixtureForge local demonstration.\n\n## FixtureForge evidence\n\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\n- Seed: 2026\n- Validation passed: True\n- Negative control detected: True\n- Source rows read: 0"
+                },
+                "health": [
+                  {
+                    "status": "PASS",
+                    "type": "INCIDENTS"
+                  }
+                ],
+                "name": "FixtureForge · customers",
+                "platform": {
+                  "name": "postgres",
+                  "urn": "urn:li:dataPlatform:postgres"
+                },
+                "properties": {
+                  "customProperties": [
+                    {
+                      "key": "fixtureforge_source_rows",
+                      "value": "never accessed"
+                    },
+                    {
+                      "key": "fixtureforge_source",
+                      "value": "fictional metadata only"
+                    }
+                  ],
+                  "name": "FixtureForge · customers"
+                },
+                "relatedDocuments": {
+                  "count": 10,
+                  "documents": [
+                    {
+                      "info": {
+                        "title": "FixtureForge evidence · fbf2d668b49b"
+                      },
+                      "type": "DOCUMENT",
+                      "urn": "urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7"
+                    },
+                    {
+                      "info": {
+                        "title": "FixtureForge evidence · fbf2d668b49b"
+                      },
+                      "type": "DOCUMENT",
+                      "urn": "urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55"
+                    },
+                    {
+                      "info": {
+                        "title": "FixtureForge evidence · fbf2d668b49b"
+                      },
+                      "type": "DOCUMENT",
+                      "urn": "urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad"
+                    }
+                  ],
+                  "start": 0,
+                  "total": 3
+                },
+                "schemaMetadata": {
+                  "fields": [
+                    {
+                      "description": "Stable customer identifier.",
+                      "editedTags": [
+                        "Primary Key"
+                      ],
+                      "fieldPath": "customer_id",
+                      "isPartOfKey": true,
+                      "nativeDataType": "BIGINT",
+                      "nullable": false
+                    },
+                    {
+                      "description": "ISO-like customer country.",
+                      "fieldPath": "country",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Customer email address.",
+                      "editedGlossaryTerms": [
+                        "Email Address"
+                      ],
+                      "editedTags": [
+                        "Pii"
+                      ],
+                      "fieldPath": "email",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Customer display name.",
+                      "editedGlossaryTerms": [
+                        "Person Name"
+                      ],
+                      "editedTags": [
+                        "Pii"
+                      ],
+                      "fieldPath": "name",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Customer contact phone.",
+                      "editedGlossaryTerms": [
+                        "Phone Number"
+                      ],
+                      "editedTags": [
+                        "Pii"
+                      ],
+                      "fieldPath": "phone",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Commercial customer segment.",
+                      "fieldPath": "segment",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Date the customer registered.",
+                      "fieldPath": "signup_date",
+                      "nativeDataType": "DATE",
+                      "nullable": false
+                    }
+                  ],
+                  "name": "",
+                  "platformUrn": "urn:li:dataPlatform:postgres",
+                  "primaryKeys": [
+                    "customer_id"
+                  ]
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+              },
+              {
+                "editableProperties": {
+                  "description": "Fictional line items linked to orders."
+                },
+                "health": [
+                  {
+                    "status": "PASS",
+                    "type": "INCIDENTS"
+                  }
+                ],
+                "name": "FixtureForge · order_items",
+                "platform": {
+                  "name": "postgres",
+                  "urn": "urn:li:dataPlatform:postgres"
+                },
+                "properties": {
+                  "customProperties": [
+                    {
+                      "key": "fixtureforge_source_rows",
+                      "value": "never accessed"
+                    },
+                    {
+                      "key": "fixtureforge_source",
+                      "value": "fictional metadata only"
+                    }
+                  ],
+                  "name": "FixtureForge · order_items"
+                },
+                "relatedDocuments": {
+                  "count": 10,
+                  "start": 0,
+                  "total": 0
+                },
+                "schemaMetadata": {
+                  "fields": [
+                    {
+                      "description": "Stable line item identifier.",
+                      "editedTags": [
+                        "Primary Key"
+                      ],
+                      "fieldPath": "order_item_id",
+                      "isPartOfKey": true,
+                      "nativeDataType": "BIGINT",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Parent order identifier.",
+                      "editedTags": [
+                        "Foreign Key"
+                      ],
+                      "fieldPath": "order_id",
+                      "nativeDataType": "BIGINT",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Units ordered.",
+                      "fieldPath": "quantity",
+                      "nativeDataType": "INTEGER",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Fictional stock keeping unit.",
+                      "fieldPath": "sku",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Price per unit.",
+                      "fieldPath": "unit_price",
+                      "nativeDataType": "DECIMAL(12,2)",
+                      "nullable": false
+                    }
+                  ],
+                  "foreignKeys": [
+                    {
+                      "foreignDataset": {
+                        "name": "FixtureForge · orders",
+                        "platform": {
+                          "name": "postgres",
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "type": "DATASET",
+                        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                      },
+                      "foreignFields": [
+                        {
+                          "fieldPath": "order_id"
+                        }
+                      ],
+                      "name": "fixtureforge_order_items_order_id_fk",
+                      "sourceFields": [
+                        {
+                          "fieldPath": "order_id"
+                        }
+                      ]
+                    }
+                  ],
+                  "name": "",
+                  "platformUrn": "urn:li:dataPlatform:postgres",
+                  "primaryKeys": [
+                    "order_item_id"
+                  ]
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+              },
+              {
+                "editableProperties": {
+                  "description": "Fictional retail orders linked to customers."
+                },
+                "health": [
+                  {
+                    "status": "PASS",
+                    "type": "INCIDENTS"
+                  }
+                ],
+                "name": "FixtureForge · orders",
+                "platform": {
+                  "name": "postgres",
+                  "urn": "urn:li:dataPlatform:postgres"
+                },
+                "properties": {
+                  "customProperties": [
+                    {
+                      "key": "fixtureforge_source_rows",
+                      "value": "never accessed"
+                    },
+                    {
+                      "key": "fixtureforge_source",
+                      "value": "fictional metadata only"
+                    }
+                  ],
+                  "name": "FixtureForge · orders"
+                },
+                "relatedDocuments": {
+                  "count": 10,
+                  "start": 0,
+                  "total": 0
+                },
+                "schemaMetadata": {
+                  "fields": [
+                    {
+                      "description": "Stable order identifier.",
+                      "editedTags": [
+                        "Primary Key"
+                      ],
+                      "fieldPath": "order_id",
+                      "isPartOfKey": true,
+                      "nativeDataType": "BIGINT",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Gross order amount.",
+                      "editedGlossaryTerms": [
+                        "Gross Order Value"
+                      ],
+                      "fieldPath": "amount",
+                      "nativeDataType": "DECIMAL(12,2)",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Customer placing the order.",
+                      "editedTags": [
+                        "Foreign Key"
+                      ],
+                      "fieldPath": "customer_id",
+                      "nativeDataType": "BIGINT",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Date the order was placed.",
+                      "fieldPath": "order_date",
+                      "nativeDataType": "DATE",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Payment rail.",
+                      "fieldPath": "payment_method",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Destination country.",
+                      "fieldPath": "shipping_country",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    },
+                    {
+                      "description": "Current lifecycle state.",
+                      "fieldPath": "status",
+                      "nativeDataType": "VARCHAR",
+                      "nullable": false
+                    }
+                  ],
+                  "foreignKeys": [
+                    {
+                      "foreignDataset": {
+                        "name": "FixtureForge · customers",
+                        "platform": {
+                          "name": "postgres",
+                          "urn": "urn:li:dataPlatform:postgres"
+                        },
+                        "type": "DATASET",
+                        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+                      },
+                      "foreignFields": [
+                        {
+                          "fieldPath": "customer_id"
+                        }
+                      ],
+                      "name": "fixtureforge_orders_customer_id_fk",
+                      "sourceFields": [
+                        {
+                          "fieldPath": "customer_id"
+                        }
+                      ]
+                    }
+                  ],
+                  "name": "",
+                  "platformUrn": "urn:li:dataPlatform:postgres",
+                  "primaryKeys": [
+                    "order_id"
+                  ]
+                },
+                "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+              }
+            ],
+            "text": "[{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)\",\"name\":\"FixtureForge · customers\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional retail dataset used by the FixtureForge local demonstration.\\n\\n## FixtureForge evidence\\n\\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\\n- Seed: 2026\\n- Validation passed: True\\n- Negative control detected: True\\n- Source rows read: 0\"},\"properties\":{\"name\":\"FixtureForge · customers\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}],\"schemaMetadata\":{\"name\":\"\",\"platformUrn\":\"urn:li:dataPlatform:postgres\",\"fields\":[{\"fieldPath\":\"customer_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable customer identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"country\",\"nativeDataType\":\"VARCHAR\",\"description\":\"ISO-like customer country.\",\"nullable\":false},{\"fieldPath\":\"email\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer email address.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Email Address\"]},{\"fieldPath\":\"name\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer display name.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Person Name\"]},{\"fieldPath\":\"phone\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer contact phone.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Phone Number\"]},{\"fieldPath\":\"segment\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Commercial customer segment.\",\"nullable\":false},{\"fieldPath\":\"signup_date\",\"nativeDataType\":\"DATE\",\"description\":\"Date the customer registered.\",\"nullable\":false}],\"primaryKeys\":[\"customer_id\"]},\"relatedDocuments\":{\"start\":0,\"count\":10,\"total\":3,\"documents\":[{\"urn\":\"urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7\",\"type\":\"DOCUMENT\",\"info\":{\"title\":\"FixtureForge evidence · fbf2d668b49b\"}},{\"urn\":\"urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55\",\"type\":\"DOCUMENT\",\"info\":{\"title\":\"FixtureForge evidence · fbf2d668b49b\"}},{\"urn\":\"urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad\",\"type\":\"DOCUMENT\",\"info\":{\"title\":\"FixtureForge evidence · fbf2d668b49b\"}}]}},{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)\",\"name\":\"FixtureForge · order_items\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional line items linked to orders.\"},\"properties\":{\"name\":\"FixtureForge · order_items\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}],\"schemaMetadata\":{\"name\":\"\",\"platformUrn\":\"urn:li:dataPlatform:postgres\",\"fields\":[{\"fieldPath\":\"order_item_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable line item identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"order_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Parent order identifier.\",\"nullable\":false,\"editedTags\":[\"Foreign Key\"]},{\"fieldPath\":\"quantity\",\"nativeDataType\":\"INTEGER\",\"description\":\"Units ordered.\",\"nullable\":false},{\"fieldPath\":\"sku\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Fictional stock keeping unit.\",\"nullable\":false},{\"fieldPath\":\"unit_price\",\"nativeDataType\":\"DECIMAL(12,2)\",\"description\":\"Price per unit.\",\"nullable\":false}],\"primaryKeys\":[\"order_item_id\"],\"foreignKeys\":[{\"name\":\"fixtureforge_order_items_order_id_fk\",\"sourceFields\":[{\"fieldPath\":\"order_id\"}],\"foreignFields\":[{\"fieldPath\":\"order_id\"}],\"foreignDataset\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"name\":\"FixtureForge · orders\",\"type\":\"DATASET\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"}}}]},\"relatedDocuments\":{\"start\":0,\"count\":10,\"total\":0}},{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"name\":\"FixtureForge · orders\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"},\"editableProperties\":{\"description\":\"Fictional retail orders linked to customers.\"},\"properties\":{\"name\":\"FixtureForge · orders\",\"customProperties\":[{\"key\":\"fixtureforge_source_rows\",\"value\":\"never accessed\"},{\"key\":\"fixtureforge_source\",\"value\":\"fictional metadata only\"}]},\"health\":[{\"type\":\"INCIDENTS\",\"status\":\"PASS\"}],\"schemaMetadata\":{\"name\":\"\",\"platformUrn\":\"urn:li:dataPlatform:postgres\",\"fields\":[{\"fieldPath\":\"order_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable order identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"amount\",\"nativeDataType\":\"DECIMAL(12,2)\",\"description\":\"Gross order amount.\",\"nullable\":false,\"editedGlossaryTerms\":[\"Gross Order Value\"]},{\"fieldPath\":\"customer_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Customer placing the order.\",\"nullable\":false,\"editedTags\":[\"Foreign Key\"]},{\"fieldPath\":\"order_date\",\"nativeDataType\":\"DATE\",\"description\":\"Date the order was placed.\",\"nullable\":false},{\"fieldPath\":\"payment_method\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Payment rail.\",\"nullable\":false},{\"fieldPath\":\"shipping_country\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Destination country.\",\"nullable\":false},{\"fieldPath\":\"status\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Current lifecycle state.\",\"nullable\":false}],\"primaryKeys\":[\"order_id\"],\"foreignKeys\":[{\"name\":\"fixtureforge_orders_customer_id_fk\",\"sourceFields\":[{\"fieldPath\":\"customer_id\"}],\"foreignFields\":[{\"fieldPath\":\"customer_id\"}],\"foreignDataset\":{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)\",\"name\":\"FixtureForge · customers\",\"type\":\"DATASET\",\"platform\":{\"urn\":\"urn:li:dataPlatform:postgres\",\"name\":\"postgres\"}}}]},\"relatedDocuments\":{\"start\":0,\"count\":10,\"total\":0}}]",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": {
+          "fastmcp": {
+            "wrap_result": true
+          }
+        },
+        "structuredContent": {
+          "result": [
+            {
+              "editableProperties": {
+                "description": "Fictional retail dataset used by the FixtureForge local demonstration.\n\n## FixtureForge evidence\n\n- Metadata fingerprint: dd4a139ffbbe65fb759388f6249703ad6b35f92c286c3e202298415e9865fb3e\n- Seed: 2026\n- Validation passed: True\n- Negative control detected: True\n- Source rows read: 0"
+              },
+              "health": [
+                {
+                  "status": "PASS",
+                  "type": "INCIDENTS"
+                }
+              ],
+              "name": "FixtureForge · customers",
+              "platform": {
+                "name": "postgres",
+                "urn": "urn:li:dataPlatform:postgres"
+              },
+              "properties": {
+                "customProperties": [
+                  {
+                    "key": "fixtureforge_source_rows",
+                    "value": "never accessed"
+                  },
+                  {
+                    "key": "fixtureforge_source",
+                    "value": "fictional metadata only"
+                  }
+                ],
+                "name": "FixtureForge · customers"
+              },
+              "relatedDocuments": {
+                "count": 10,
+                "documents": [
+                  {
+                    "info": {
+                      "title": "FixtureForge evidence · fbf2d668b49b"
+                    },
+                    "type": "DOCUMENT",
+                    "urn": "urn:li:document:shared-3ecc75e6-5e0b-4c68-8cbe-4f08ac4fccb7"
+                  },
+                  {
+                    "info": {
+                      "title": "FixtureForge evidence · fbf2d668b49b"
+                    },
+                    "type": "DOCUMENT",
+                    "urn": "urn:li:document:shared-7fdcc75d-8eeb-417f-8ddf-c55e6dd5ee55"
+                  },
+                  {
+                    "info": {
+                      "title": "FixtureForge evidence · fbf2d668b49b"
+                    },
+                    "type": "DOCUMENT",
+                    "urn": "urn:li:document:shared-71ca9a37-490b-44f6-a5b9-c1e9954364ad"
+                  }
+                ],
+                "start": 0,
+                "total": 3
+              },
+              "schemaMetadata": {
+                "fields": [
+                  {
+                    "description": "Stable customer identifier.",
+                    "editedTags": [
+                      "Primary Key"
+                    ],
+                    "fieldPath": "customer_id",
+                    "isPartOfKey": true,
+                    "nativeDataType": "BIGINT",
+                    "nullable": false
+                  },
+                  {
+                    "description": "ISO-like customer country.",
+                    "fieldPath": "country",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Customer email address.",
+                    "editedGlossaryTerms": [
+                      "Email Address"
+                    ],
+                    "editedTags": [
+                      "Pii"
+                    ],
+                    "fieldPath": "email",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Customer display name.",
+                    "editedGlossaryTerms": [
+                      "Person Name"
+                    ],
+                    "editedTags": [
+                      "Pii"
+                    ],
+                    "fieldPath": "name",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Customer contact phone.",
+                    "editedGlossaryTerms": [
+                      "Phone Number"
+                    ],
+                    "editedTags": [
+                      "Pii"
+                    ],
+                    "fieldPath": "phone",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Commercial customer segment.",
+                    "fieldPath": "segment",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Date the customer registered.",
+                    "fieldPath": "signup_date",
+                    "nativeDataType": "DATE",
+                    "nullable": false
+                  }
+                ],
+                "name": "",
+                "platformUrn": "urn:li:dataPlatform:postgres",
+                "primaryKeys": [
+                  "customer_id"
+                ]
+              },
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+            },
+            {
+              "editableProperties": {
+                "description": "Fictional line items linked to orders."
+              },
+              "health": [
+                {
+                  "status": "PASS",
+                  "type": "INCIDENTS"
+                }
+              ],
+              "name": "FixtureForge · order_items",
+              "platform": {
+                "name": "postgres",
+                "urn": "urn:li:dataPlatform:postgres"
+              },
+              "properties": {
+                "customProperties": [
+                  {
+                    "key": "fixtureforge_source_rows",
+                    "value": "never accessed"
+                  },
+                  {
+                    "key": "fixtureforge_source",
+                    "value": "fictional metadata only"
+                  }
+                ],
+                "name": "FixtureForge · order_items"
+              },
+              "relatedDocuments": {
+                "count": 10,
+                "start": 0,
+                "total": 0
+              },
+              "schemaMetadata": {
+                "fields": [
+                  {
+                    "description": "Stable line item identifier.",
+                    "editedTags": [
+                      "Primary Key"
+                    ],
+                    "fieldPath": "order_item_id",
+                    "isPartOfKey": true,
+                    "nativeDataType": "BIGINT",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Parent order identifier.",
+                    "editedTags": [
+                      "Foreign Key"
+                    ],
+                    "fieldPath": "order_id",
+                    "nativeDataType": "BIGINT",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Units ordered.",
+                    "fieldPath": "quantity",
+                    "nativeDataType": "INTEGER",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Fictional stock keeping unit.",
+                    "fieldPath": "sku",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Price per unit.",
+                    "fieldPath": "unit_price",
+                    "nativeDataType": "DECIMAL(12,2)",
+                    "nullable": false
+                  }
+                ],
+                "foreignKeys": [
+                  {
+                    "foreignDataset": {
+                      "name": "FixtureForge · orders",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+                    },
+                    "foreignFields": [
+                      {
+                        "fieldPath": "order_id"
+                      }
+                    ],
+                    "name": "fixtureforge_order_items_order_id_fk",
+                    "sourceFields": [
+                      {
+                        "fieldPath": "order_id"
+                      }
+                    ]
+                  }
+                ],
+                "name": "",
+                "platformUrn": "urn:li:dataPlatform:postgres",
+                "primaryKeys": [
+                  "order_item_id"
+                ]
+              },
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+            },
+            {
+              "editableProperties": {
+                "description": "Fictional retail orders linked to customers."
+              },
+              "health": [
+                {
+                  "status": "PASS",
+                  "type": "INCIDENTS"
+                }
+              ],
+              "name": "FixtureForge · orders",
+              "platform": {
+                "name": "postgres",
+                "urn": "urn:li:dataPlatform:postgres"
+              },
+              "properties": {
+                "customProperties": [
+                  {
+                    "key": "fixtureforge_source_rows",
+                    "value": "never accessed"
+                  },
+                  {
+                    "key": "fixtureforge_source",
+                    "value": "fictional metadata only"
+                  }
+                ],
+                "name": "FixtureForge · orders"
+              },
+              "relatedDocuments": {
+                "count": 10,
+                "start": 0,
+                "total": 0
+              },
+              "schemaMetadata": {
+                "fields": [
+                  {
+                    "description": "Stable order identifier.",
+                    "editedTags": [
+                      "Primary Key"
+                    ],
+                    "fieldPath": "order_id",
+                    "isPartOfKey": true,
+                    "nativeDataType": "BIGINT",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Gross order amount.",
+                    "editedGlossaryTerms": [
+                      "Gross Order Value"
+                    ],
+                    "fieldPath": "amount",
+                    "nativeDataType": "DECIMAL(12,2)",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Customer placing the order.",
+                    "editedTags": [
+                      "Foreign Key"
+                    ],
+                    "fieldPath": "customer_id",
+                    "nativeDataType": "BIGINT",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Date the order was placed.",
+                    "fieldPath": "order_date",
+                    "nativeDataType": "DATE",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Payment rail.",
+                    "fieldPath": "payment_method",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Destination country.",
+                    "fieldPath": "shipping_country",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  },
+                  {
+                    "description": "Current lifecycle state.",
+                    "fieldPath": "status",
+                    "nativeDataType": "VARCHAR",
+                    "nullable": false
+                  }
+                ],
+                "foreignKeys": [
+                  {
+                    "foreignDataset": {
+                      "name": "FixtureForge · customers",
+                      "platform": {
+                        "name": "postgres",
+                        "urn": "urn:li:dataPlatform:postgres"
+                      },
+                      "type": "DATASET",
+                      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+                    },
+                    "foreignFields": [
+                      {
+                        "fieldPath": "customer_id"
+                      }
+                    ],
+                    "name": "fixtureforge_orders_customer_id_fk",
+                    "sourceFields": [
+                      {
+                        "fieldPath": "customer_id"
+                      }
+                    ]
+                  }
+                ],
+                "name": "",
+                "platformUrn": "urn:li:dataPlatform:postgres",
+                "primaryKeys": [
+                  "order_id"
+                ]
+              },
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+            }
+          ]
+        }
+      },
+      "tool": "get_entities"
+    },
+    {
+      "arguments": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "fields": [
+                {
+                  "description": "Stable customer identifier.",
+                  "editedTags": [
+                    "Primary Key"
+                  ],
+                  "fieldPath": "customer_id",
+                  "isPartOfKey": true,
+                  "nativeDataType": "BIGINT",
+                  "nullable": false
+                },
+                {
+                  "description": "ISO-like customer country.",
+                  "fieldPath": "country",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Customer email address.",
+                  "editedGlossaryTerms": [
+                    "Email Address"
+                  ],
+                  "editedTags": [
+                    "Pii"
+                  ],
+                  "fieldPath": "email",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Customer display name.",
+                  "editedGlossaryTerms": [
+                    "Person Name"
+                  ],
+                  "editedTags": [
+                    "Pii"
+                  ],
+                  "fieldPath": "name",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Customer contact phone.",
+                  "editedGlossaryTerms": [
+                    "Phone Number"
+                  ],
+                  "editedTags": [
+                    "Pii"
+                  ],
+                  "fieldPath": "phone",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Commercial customer segment.",
+                  "fieldPath": "segment",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Date the customer registered.",
+                  "fieldPath": "signup_date",
+                  "nativeDataType": "DATE",
+                  "nullable": false
+                }
+              ],
+              "matchingCount": null,
+              "offset": 0,
+              "remainingCount": 0,
+              "returned": 7,
+              "totalFields": 7,
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+            },
+            "text": "{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)\",\"fields\":[{\"fieldPath\":\"customer_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable customer identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"country\",\"nativeDataType\":\"VARCHAR\",\"description\":\"ISO-like customer country.\",\"nullable\":false},{\"fieldPath\":\"email\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer email address.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Email Address\"]},{\"fieldPath\":\"name\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer display name.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Person Name\"]},{\"fieldPath\":\"phone\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Customer contact phone.\",\"nullable\":false,\"editedTags\":[\"Pii\"],\"editedGlossaryTerms\":[\"Phone Number\"]},{\"fieldPath\":\"segment\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Commercial customer segment.\",\"nullable\":false},{\"fieldPath\":\"signup_date\",\"nativeDataType\":\"DATE\",\"description\":\"Date the customer registered.\",\"nullable\":false}],\"totalFields\":7,\"returned\":7,\"remainingCount\":0,\"matchingCount\":null,\"offset\":0}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "fields": [
+            {
+              "description": "Stable customer identifier.",
+              "editedTags": [
+                "Primary Key"
+              ],
+              "fieldPath": "customer_id",
+              "isPartOfKey": true,
+              "nativeDataType": "BIGINT",
+              "nullable": false
+            },
+            {
+              "description": "ISO-like customer country.",
+              "fieldPath": "country",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Customer email address.",
+              "editedGlossaryTerms": [
+                "Email Address"
+              ],
+              "editedTags": [
+                "Pii"
+              ],
+              "fieldPath": "email",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Customer display name.",
+              "editedGlossaryTerms": [
+                "Person Name"
+              ],
+              "editedTags": [
+                "Pii"
+              ],
+              "fieldPath": "name",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Customer contact phone.",
+              "editedGlossaryTerms": [
+                "Phone Number"
+              ],
+              "editedTags": [
+                "Pii"
+              ],
+              "fieldPath": "phone",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Commercial customer segment.",
+              "fieldPath": "segment",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Date the customer registered.",
+              "fieldPath": "signup_date",
+              "nativeDataType": "DATE",
+              "nullable": false
+            }
+          ],
+          "matchingCount": null,
+          "offset": 0,
+          "remainingCount": 0,
+          "returned": 7,
+          "totalFields": 7,
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+        }
+      },
+      "tool": "list_schema_fields"
+    },
+    {
+      "arguments": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "fields": [
+                {
+                  "description": "Stable line item identifier.",
+                  "editedTags": [
+                    "Primary Key"
+                  ],
+                  "fieldPath": "order_item_id",
+                  "isPartOfKey": true,
+                  "nativeDataType": "BIGINT",
+                  "nullable": false
+                },
+                {
+                  "description": "Parent order identifier.",
+                  "editedTags": [
+                    "Foreign Key"
+                  ],
+                  "fieldPath": "order_id",
+                  "nativeDataType": "BIGINT",
+                  "nullable": false
+                },
+                {
+                  "description": "Units ordered.",
+                  "fieldPath": "quantity",
+                  "nativeDataType": "INTEGER",
+                  "nullable": false
+                },
+                {
+                  "description": "Fictional stock keeping unit.",
+                  "fieldPath": "sku",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Price per unit.",
+                  "fieldPath": "unit_price",
+                  "nativeDataType": "DECIMAL(12,2)",
+                  "nullable": false
+                }
+              ],
+              "matchingCount": null,
+              "offset": 0,
+              "remainingCount": 0,
+              "returned": 5,
+              "totalFields": 5,
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+            },
+            "text": "{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)\",\"fields\":[{\"fieldPath\":\"order_item_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable line item identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"order_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Parent order identifier.\",\"nullable\":false,\"editedTags\":[\"Foreign Key\"]},{\"fieldPath\":\"quantity\",\"nativeDataType\":\"INTEGER\",\"description\":\"Units ordered.\",\"nullable\":false},{\"fieldPath\":\"sku\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Fictional stock keeping unit.\",\"nullable\":false},{\"fieldPath\":\"unit_price\",\"nativeDataType\":\"DECIMAL(12,2)\",\"description\":\"Price per unit.\",\"nullable\":false}],\"totalFields\":5,\"returned\":5,\"remainingCount\":0,\"matchingCount\":null,\"offset\":0}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "fields": [
+            {
+              "description": "Stable line item identifier.",
+              "editedTags": [
+                "Primary Key"
+              ],
+              "fieldPath": "order_item_id",
+              "isPartOfKey": true,
+              "nativeDataType": "BIGINT",
+              "nullable": false
+            },
+            {
+              "description": "Parent order identifier.",
+              "editedTags": [
+                "Foreign Key"
+              ],
+              "fieldPath": "order_id",
+              "nativeDataType": "BIGINT",
+              "nullable": false
+            },
+            {
+              "description": "Units ordered.",
+              "fieldPath": "quantity",
+              "nativeDataType": "INTEGER",
+              "nullable": false
+            },
+            {
+              "description": "Fictional stock keeping unit.",
+              "fieldPath": "sku",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Price per unit.",
+              "fieldPath": "unit_price",
+              "nativeDataType": "DECIMAL(12,2)",
+              "nullable": false
+            }
+          ],
+          "matchingCount": null,
+          "offset": 0,
+          "remainingCount": 0,
+          "returned": 5,
+          "totalFields": 5,
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+        }
+      },
+      "tool": "list_schema_fields"
+    },
+    {
+      "arguments": {
+        "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+      },
+      "response": {
+        "content": [
+          {
+            "annotations": null,
+            "meta": null,
+            "parsed_json": {
+              "fields": [
+                {
+                  "description": "Stable order identifier.",
+                  "editedTags": [
+                    "Primary Key"
+                  ],
+                  "fieldPath": "order_id",
+                  "isPartOfKey": true,
+                  "nativeDataType": "BIGINT",
+                  "nullable": false
+                },
+                {
+                  "description": "Gross order amount.",
+                  "editedGlossaryTerms": [
+                    "Gross Order Value"
+                  ],
+                  "fieldPath": "amount",
+                  "nativeDataType": "DECIMAL(12,2)",
+                  "nullable": false
+                },
+                {
+                  "description": "Customer placing the order.",
+                  "editedTags": [
+                    "Foreign Key"
+                  ],
+                  "fieldPath": "customer_id",
+                  "nativeDataType": "BIGINT",
+                  "nullable": false
+                },
+                {
+                  "description": "Date the order was placed.",
+                  "fieldPath": "order_date",
+                  "nativeDataType": "DATE",
+                  "nullable": false
+                },
+                {
+                  "description": "Payment rail.",
+                  "fieldPath": "payment_method",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Destination country.",
+                  "fieldPath": "shipping_country",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                },
+                {
+                  "description": "Current lifecycle state.",
+                  "fieldPath": "status",
+                  "nativeDataType": "VARCHAR",
+                  "nullable": false
+                }
+              ],
+              "matchingCount": null,
+              "offset": 0,
+              "remainingCount": 0,
+              "returned": 7,
+              "totalFields": 7,
+              "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+            },
+            "text": "{\"urn\":\"urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)\",\"fields\":[{\"fieldPath\":\"order_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Stable order identifier.\",\"nullable\":false,\"isPartOfKey\":true,\"editedTags\":[\"Primary Key\"]},{\"fieldPath\":\"amount\",\"nativeDataType\":\"DECIMAL(12,2)\",\"description\":\"Gross order amount.\",\"nullable\":false,\"editedGlossaryTerms\":[\"Gross Order Value\"]},{\"fieldPath\":\"customer_id\",\"nativeDataType\":\"BIGINT\",\"description\":\"Customer placing the order.\",\"nullable\":false,\"editedTags\":[\"Foreign Key\"]},{\"fieldPath\":\"order_date\",\"nativeDataType\":\"DATE\",\"description\":\"Date the order was placed.\",\"nullable\":false},{\"fieldPath\":\"payment_method\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Payment rail.\",\"nullable\":false},{\"fieldPath\":\"shipping_country\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Destination country.\",\"nullable\":false},{\"fieldPath\":\"status\",\"nativeDataType\":\"VARCHAR\",\"description\":\"Current lifecycle state.\",\"nullable\":false}],\"totalFields\":7,\"returned\":7,\"remainingCount\":0,\"matchingCount\":null,\"offset\":0}",
+            "type": "text"
+          }
+        ],
+        "isError": false,
+        "meta": null,
+        "structuredContent": {
+          "fields": [
+            {
+              "description": "Stable order identifier.",
+              "editedTags": [
+                "Primary Key"
+              ],
+              "fieldPath": "order_id",
+              "isPartOfKey": true,
+              "nativeDataType": "BIGINT",
+              "nullable": false
+            },
+            {
+              "description": "Gross order amount.",
+              "editedGlossaryTerms": [
+                "Gross Order Value"
+              ],
+              "fieldPath": "amount",
+              "nativeDataType": "DECIMAL(12,2)",
+              "nullable": false
+            },
+            {
+              "description": "Customer placing the order.",
+              "editedTags": [
+                "Foreign Key"
+              ],
+              "fieldPath": "customer_id",
+              "nativeDataType": "BIGINT",
+              "nullable": false
+            },
+            {
+              "description": "Date the order was placed.",
+              "fieldPath": "order_date",
+              "nativeDataType": "DATE",
+              "nullable": false
+            },
+            {
+              "description": "Payment rail.",
+              "fieldPath": "payment_method",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Destination country.",
+              "fieldPath": "shipping_country",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            },
+            {
+              "description": "Current lifecycle state.",
+              "fieldPath": "status",
+              "nativeDataType": "VARCHAR",
+              "nullable": false
+            }
+          ],
+          "matchingCount": null,
+          "offset": 0,
+          "remainingCount": 0,
+          "returned": 7,
+          "totalFields": 7,
+          "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+        }
+      },
+      "tool": "list_schema_fields"
+    }
+  ],
+  "discovery": {
+    "max_datasets": 12,
+    "query": "FixtureForge",
+    "search_roots": [
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+    ],
+    "selected_datasets": [
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+    ],
+    "selection_rule": "search results plus one-hop upstream/downstream lineage, sorted and capped",
+    "source_rows_read": 0
+  },
+  "initialize": {
+    "capabilities": {
+      "completions": null,
+      "experimental": {},
+      "extensions": {
+        "io.modelcontextprotocol/ui": {}
+      },
+      "logging": {},
+      "prompts": {
+        "listChanged": false
+      },
+      "resources": {
+        "listChanged": false,
+        "subscribe": false
+      },
+      "tasks": null,
+      "tools": {
+        "listChanged": true
+      }
+    },
+    "instructions": null,
+    "meta": null,
+    "protocolVersion": "2025-11-25",
+    "serverInfo": {
+      "icons": null,
+      "name": "datahub",
+      "title": null,
+      "version": "3.4.6",
+      "websiteUrl": null
+    }
+  },
+  "policy": {
+    "allowed_tools": [
+      "get_entities",
+      "get_lineage",
+      "list_schema_fields",
+      "search"
+    ],
+    "document_tools_enabled": false,
+    "mutation_enabled": false,
+    "source_row_tools_available": false
+  },
+  "server": {
+    "distribution": "mcp-server-datahub",
+    "repository": "https://github.com/acryldata/mcp-server-datahub",
+    "transport": "stdio",
+    "version": "0.6.0"
+  },
+  "summary": {
+    "calls": 11,
+    "source_row_calls": 0,
+    "tools_used": [
+      "get_entities",
+      "get_lineage",
+      "list_schema_fields",
+      "search"
+    ]
+  }
+}

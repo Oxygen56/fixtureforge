@@ -23,3 +23,6 @@ jobs:
       - run: uv run fixtureforge generate --input fixtures/fiction_retail.metadata.json --output build/ci-a --seed 2026
       - run: uv run fixtureforge generate --input fixtures/fiction_retail.metadata.json --output build/ci-b --seed 2026
       - run: uv run fixtureforge compare --first build/ci-a --second build/ci-b
+      - run: uv run fixtureforge generate --input fixtures/fiction_support.metadata.json --output build/support-a --seed 2026
+      - run: uv run fixtureforge verify --bundle build/support-a
+      - run: make agent-demo

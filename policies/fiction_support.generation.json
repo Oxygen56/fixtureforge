@@ -1,0 +1,29 @@
+{
+  "policy_version": "1.0",
+  "purpose": "Support-domain generation bounds not represented by source schema.",
+  "datasets": {
+    "accounts": {
+      "rows": 10,
+      "fields": {
+        "owner_email": {"format": "email"},
+        "plan": {"enum_values": ["starter", "growth", "enterprise"]},
+        "created_on": {"format": "date"}
+      }
+    },
+    "tickets": {
+      "rows": 24,
+      "fields": {
+        "requester_email": {"format": "email"},
+        "priority": {"enum_values": ["low", "normal", "high", "urgent"]},
+        "status": {"enum_values": ["open", "pending", "solved", "closed"]},
+        "opened_on": {"format": "date"}
+      }
+    },
+    "ticket_events": {
+      "rows": 40,
+      "fields": {
+        "event_type": {"enum_values": ["created", "assigned", "replied", "resolved"]}
+      }
+    }
+  }
+}
