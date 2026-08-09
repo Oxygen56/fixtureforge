@@ -22,6 +22,8 @@ Verified live support-domain run: `build/agent-live.Ptbi3a`
 
 Public agent delivery: https://github.com/Oxygen56/fixtureforge/pull/1
 
+Clean-room GitHub Actions run: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
+
 ## Independent second-domain evidence
 
 Retail and support operations have different schemas, governed fields, enum
@@ -58,7 +60,8 @@ These measurements are local evidence, not production throughput or adoption.
 
 - Repository: https://github.com/Oxygen56/fixtureforge
 - Agent PR: https://github.com/Oxygen56/fixtureforge/pull/1
-- Current video: https://youtu.be/nVfAAvWDKyQ
+- Live 2:06 video: https://youtu.be/hZRhNeFJiqA
+- Clean-room live workflow: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
 - Submitted project: https://devpost.com/software/fixtureforge
 
 The current evidence proves local operation, public CI, and a reviewable Git

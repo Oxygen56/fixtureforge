@@ -23,9 +23,10 @@ entered in Metadata-Aware Code Generation & Development.
 ## Demo
 
 - [Submitted Devpost project](https://devpost.com/software/fixtureforge)
-- [Public demonstration video](https://youtu.be/nVfAAvWDKyQ)
+- [2:06 live demonstration video](https://youtu.be/hZRhNeFJiqA)
 - [Public source repository](https://github.com/Oxygen56/fixtureforge)
 - [Agent-generated review pull request](https://github.com/Oxygen56/fixtureforge/pull/1)
+- [Clean-room live DataHub workflow](https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018)
 
 ## The problem
 

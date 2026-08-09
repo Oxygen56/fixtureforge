@@ -23,7 +23,7 @@
 - [x] Publish a real agent-generated Git branch and review PR
 - [x] Add a second independent domain and exact search-scope boundary
 - [x] Replace description mutation with a structured DataHub Context Document
-- [ ] Replace the original slideshow video with true live product footage
+- [x] Replace the original slideshow video with true live product footage
 - [ ] Update and re-verify Devpost after the final video and PR links
 
 Submission receipt: https://devpost.com/software/fixtureforge displays
@@ -31,3 +31,7 @@ Submission receipt: https://devpost.com/software/fixtureforge displays
 shows Submitted and 5/5 steps done.
 
 Agent-generated delivery: https://github.com/Oxygen56/fixtureforge/pull/1
+
+Final live video: https://youtu.be/hZRhNeFJiqA
+
+Clean-room live run: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
