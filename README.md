@@ -118,6 +118,9 @@ This replay proves compiler behavior but is not presented as live MCP evidence.
 
 ## Outputs
 
+Review the [committed verified sample bundle](examples/verified-output) without
+running the project first.
+
 | Path | Purpose |
 |---|---|
 | valid/csv | deterministic relational fixtures |

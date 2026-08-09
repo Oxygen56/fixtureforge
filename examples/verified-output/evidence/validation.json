@@ -1,0 +1,280 @@
+{
+  "checks": [
+    {
+      "actual": 12,
+      "check": "row_count",
+      "dataset": "customers",
+      "expected": 12,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "country",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "customer_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "email",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "name",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "segment",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "customers",
+      "field": "signup_date",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "customers",
+      "fields": [
+        "customer_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "customers",
+      "fields": [
+        "customer_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "customers",
+      "fields": [
+        "email"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "customers",
+      "field": "segment",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "actual": 18,
+      "check": "row_count",
+      "dataset": "orders",
+      "expected": 18,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "amount",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "customer_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "order_date",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "order_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "payment_method",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "shipping_country",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "orders",
+      "field": "status",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "orders",
+      "fields": [
+        "order_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "orders",
+      "fields": [
+        "order_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "orders",
+      "field": "status",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "range",
+      "dataset": "orders",
+      "field": "amount",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "accepted_values",
+      "dataset": "orders",
+      "field": "payment_method",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "foreign_key",
+      "dataset": "orders",
+      "fields": [
+        "customer_id"
+      ],
+      "passed": true,
+      "references": "customers.customer_id",
+      "violations": 0
+    },
+    {
+      "actual": 30,
+      "check": "row_count",
+      "dataset": "order_items",
+      "expected": 30,
+      "passed": true
+    },
+    {
+      "check": "not_null",
+      "dataset": "order_items",
+      "field": "order_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "order_items",
+      "field": "order_item_id",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "order_items",
+      "field": "quantity",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "order_items",
+      "field": "sku",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "not_null",
+      "dataset": "order_items",
+      "field": "unit_price",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "order_items",
+      "fields": [
+        "order_item_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "unique",
+      "dataset": "order_items",
+      "fields": [
+        "order_item_id"
+      ],
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "range",
+      "dataset": "order_items",
+      "field": "quantity",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "range",
+      "dataset": "order_items",
+      "field": "unit_price",
+      "passed": true,
+      "violations": 0
+    },
+    {
+      "check": "foreign_key",
+      "dataset": "order_items",
+      "fields": [
+        "order_id"
+      ],
+      "passed": true,
+      "references": "orders.order_id",
+      "violations": 0
+    }
+  ],
+  "checks_passed": 36,
+  "checks_total": 36,
+  "passed": true,
+  "status": "verified"
+}

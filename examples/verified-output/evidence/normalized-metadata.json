@@ -1,0 +1,419 @@
+{
+  "adapter_evidence": {
+    "mode": "fixture",
+    "source_row_tools_called": [],
+    "tool_allowlist": [
+      "get_entities",
+      "list_schema_fields",
+      "get_lineage"
+    ]
+  },
+  "contract_version": "1.0",
+  "datasets": [
+    {
+      "assertions": [
+        {
+          "field": "customer_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "email",
+          "kind": "unique",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "segment",
+          "kind": "accepted_values",
+          "maximum": null,
+          "minimum": null,
+          "values": [
+            "consumer",
+            "small_business",
+            "enterprise"
+          ]
+        }
+      ],
+      "description": "Fictional retail customer profiles.",
+      "fields": [
+        {
+          "description": "Stable customer identifier.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "customer_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "Customer display name.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [
+            "person_name"
+          ],
+          "maximum": null,
+          "minimum": null,
+          "name": "name",
+          "nullable": false,
+          "tags": [
+            "PII"
+          ],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Customer email address.",
+          "enum_values": [],
+          "format": "email",
+          "glossary_terms": [
+            "email_address"
+          ],
+          "maximum": null,
+          "minimum": null,
+          "name": "email",
+          "nullable": false,
+          "tags": [
+            "PII"
+          ],
+          "type": "VARCHAR",
+          "unique": true
+        },
+        {
+          "description": "Customer contact phone.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [
+            "phone_number"
+          ],
+          "maximum": null,
+          "minimum": null,
+          "name": "phone",
+          "nullable": true,
+          "tags": [
+            "PII"
+          ],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Date the customer registered.",
+          "enum_values": [],
+          "format": "date",
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "signup_date",
+          "nullable": false,
+          "tags": [],
+          "type": "DATE",
+          "unique": false
+        },
+        {
+          "description": "ISO-like customer country.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "country",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Commercial customer segment.",
+          "enum_values": [
+            "consumer",
+            "small_business",
+            "enterprise"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "segment",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [],
+      "name": "customers",
+      "primary_key": [
+        "customer_id"
+      ],
+      "rows": 12,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+    },
+    {
+      "assertions": [
+        {
+          "field": "customer_id",
+          "kind": "not_null",
+          "maximum": null,
+          "minimum": null,
+          "values": []
+        },
+        {
+          "field": "amount",
+          "kind": "range",
+          "maximum": 10000,
+          "minimum": 0,
+          "values": []
+        }
+      ],
+      "description": "Fictional retail orders linked to customers.",
+      "fields": [
+        {
+          "description": "Stable order identifier.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "order_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "Customer placing the order.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "customer_id",
+          "nullable": false,
+          "tags": [
+            "foreign_key"
+          ],
+          "type": "BIGINT",
+          "unique": false
+        },
+        {
+          "description": "Date the order was placed.",
+          "enum_values": [],
+          "format": "date",
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "order_date",
+          "nullable": false,
+          "tags": [],
+          "type": "DATE",
+          "unique": false
+        },
+        {
+          "description": "Current lifecycle state.",
+          "enum_values": [
+            "pending",
+            "paid",
+            "shipped",
+            "delivered",
+            "cancelled"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "status",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Gross order amount.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [
+            "gross_order_value"
+          ],
+          "maximum": 10000,
+          "minimum": 0,
+          "name": "amount",
+          "nullable": false,
+          "tags": [],
+          "type": "DECIMAL(12,2)",
+          "unique": false
+        },
+        {
+          "description": "Payment rail.",
+          "enum_values": [
+            "card",
+            "bank_transfer",
+            "wallet"
+          ],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "payment_method",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Destination country.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "shipping_country",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [
+        {
+          "fields": [
+            "customer_id"
+          ],
+          "references_fields": [
+            "customer_id"
+          ],
+          "references_table": "customers"
+        }
+      ],
+      "name": "orders",
+      "primary_key": [
+        "order_id"
+      ],
+      "rows": 18,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+    },
+    {
+      "assertions": [
+        {
+          "field": "quantity",
+          "kind": "range",
+          "maximum": 10,
+          "minimum": 1,
+          "values": []
+        }
+      ],
+      "description": "Fictional line items linked to orders.",
+      "fields": [
+        {
+          "description": "Stable line item identifier.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "order_item_id",
+          "nullable": false,
+          "tags": [
+            "primary_key"
+          ],
+          "type": "BIGINT",
+          "unique": true
+        },
+        {
+          "description": "Parent order identifier.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "order_id",
+          "nullable": false,
+          "tags": [
+            "foreign_key"
+          ],
+          "type": "BIGINT",
+          "unique": false
+        },
+        {
+          "description": "Fictional stock keeping unit.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": null,
+          "minimum": null,
+          "name": "sku",
+          "nullable": false,
+          "tags": [],
+          "type": "VARCHAR",
+          "unique": false
+        },
+        {
+          "description": "Units ordered.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": 10,
+          "minimum": 1,
+          "name": "quantity",
+          "nullable": false,
+          "tags": [],
+          "type": "INTEGER",
+          "unique": false
+        },
+        {
+          "description": "Price per unit.",
+          "enum_values": [],
+          "format": null,
+          "glossary_terms": [],
+          "maximum": 2500,
+          "minimum": 0.01,
+          "name": "unit_price",
+          "nullable": false,
+          "tags": [],
+          "type": "DECIMAL(12,2)",
+          "unique": false
+        }
+      ],
+      "foreign_keys": [
+        {
+          "fields": [
+            "order_id"
+          ],
+          "references_fields": [
+            "order_id"
+          ],
+          "references_table": "orders"
+        }
+      ],
+      "name": "order_items",
+      "primary_key": [
+        "order_item_id"
+      ],
+      "rows": 30,
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)"
+    }
+  ],
+  "generated_at": null,
+  "lineage": [
+    {
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)",
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.customers,PROD)"
+    },
+    {
+      "downstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.order_items,PROD)",
+      "upstream": "urn:li:dataset:(urn:li:dataPlatform:postgres,fiction_retail.orders,PROD)"
+    }
+  ],
+  "source": "datahub-oss:mcp-recording:fiction-retail"
+}

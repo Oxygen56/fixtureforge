@@ -1,0 +1,176 @@
+version: 2
+models:
+- name: customers
+  description: Fictional retail customer profiles.
+  columns:
+  - name: customer_id
+    description: Stable customer identifier.
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: name
+    description: Customer display name.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - PII
+      datahub_glossary_terms:
+      - person_name
+  - name: email
+    description: Customer email address.
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - PII
+      datahub_glossary_terms:
+      - email_address
+  - name: phone
+    description: Customer contact phone.
+    data_tests: []
+    meta:
+      datahub_tags:
+      - PII
+      datahub_glossary_terms:
+      - phone_number
+  - name: signup_date
+    description: Date the customer registered.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: country
+    description: ISO-like customer country.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: segment
+    description: Commercial customer segment.
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - consumer
+        - small_business
+        - enterprise
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+- name: orders
+  description: Fictional retail orders linked to customers.
+  columns:
+  - name: order_id
+    description: Stable order identifier.
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: customer_id
+    description: Customer placing the order.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - foreign_key
+      datahub_glossary_terms: []
+  - name: order_date
+    description: Date the order was placed.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: status
+    description: Current lifecycle state.
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - pending
+        - paid
+        - shipped
+        - delivered
+        - cancelled
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: amount
+    description: Gross order amount.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms:
+      - gross_order_value
+  - name: payment_method
+    description: Payment rail.
+    data_tests:
+    - not_null
+    - accepted_values:
+        values:
+        - card
+        - bank_transfer
+        - wallet
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: shipping_country
+    description: Destination country.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+- name: order_items
+  description: Fictional line items linked to orders.
+  columns:
+  - name: order_item_id
+    description: Stable line item identifier.
+    data_tests:
+    - not_null
+    - unique
+    meta:
+      datahub_tags:
+      - primary_key
+      datahub_glossary_terms: []
+  - name: order_id
+    description: Parent order identifier.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags:
+      - foreign_key
+      datahub_glossary_terms: []
+  - name: sku
+    description: Fictional stock keeping unit.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: quantity
+    description: Units ordered.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []
+  - name: unit_price
+    description: Price per unit.
+    data_tests:
+    - not_null
+    meta:
+      datahub_tags: []
+      datahub_glossary_terms: []

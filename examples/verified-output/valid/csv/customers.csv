@@ -1,0 +1,13 @@
+customer_id,name,email,phone,signup_date,country,segment
+1,Avery Atlas,fixture.customers.1@example.test,+1-555-000-1000,2024-01-01,US,consumer
+2,Blake Dover,fixture.customers.2@example.test,+1-555-001-1097,2024-01-08,CA,small_business
+3,Casey Grove,fixture.customers.3@example.test,+1-555-002-1194,2024-01-15,GB,enterprise
+4,Devon Birch,fixture.customers.4@example.test,+1-555-003-1291,2024-01-22,DE,consumer
+5,Emery Elm,fixture.customers.5@example.test,+1-555-004-1388,2024-01-29,FR,small_business
+6,Frankie Haven,fixture.customers.6@example.test,+1-555-005-1485,2024-02-05,JP,enterprise
+7,Gray Cedar,fixture.customers.7@example.test,+1-555-006-1582,2024-02-12,AU,consumer
+8,Harper Frost,fixture.customers.8@example.test,+1-555-007-1679,2024-02-19,BR,small_business
+9,Avery Atlas,fixture.customers.9@example.test,+1-555-008-1776,2024-02-26,US,enterprise
+10,Blake Dover,fixture.customers.10@example.test,+1-555-009-1873,2024-03-04,CA,consumer
+11,Casey Grove,fixture.customers.11@example.test,+1-555-010-1970,2024-03-11,GB,small_business
+12,Devon Birch,fixture.customers.12@example.test,+1-555-011-2067,2024-03-18,DE,enterprise

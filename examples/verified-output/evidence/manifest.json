@@ -1,0 +1,67 @@
+{
+  "adapter_evidence": {
+    "mode": "fixture",
+    "source_row_tools_called": [],
+    "tool_allowlist": [
+      "get_entities",
+      "list_schema_fields",
+      "get_lineage"
+    ]
+  },
+  "claim": "source-row-free",
+  "claim_boundary": "not anonymization or a privacy guarantee",
+  "dataset_order": [
+    "customers",
+    "orders",
+    "order_items"
+  ],
+  "files": {
+    "developer/factories.py": "4aa239c3f7cb2142259ff2766dbd178f4b4469c9b43ef85a1d07e9d24ebf8b12",
+    "developer/schema.yml": "9b98f7cfed7063a71ea4f41bf77cb86c04fee42345d5a9638222d097f780ec1d",
+    "evidence/negative-validation.json": "1be75d158f67046b1b031a99610dbb4ad1b25747e8b5c6a343366b221b95766d",
+    "evidence/normalized-metadata.json": "5847dae6bcd45642ae1c82b209bd591c440b0848b9dcec45bc1b5e44a77ae781",
+    "evidence/validation.json": "4bba8090820c808a53843d258dafe47283664fb782b8562f83dea932efa95525",
+    "negative/broken_foreign_key/customers.csv": "288bfd4c6f4dba37e001d4e347a42a480bf262397577ed68f292fb56a1277128",
+    "negative/broken_foreign_key/order_items.csv": "6fd8dc958f2748e69102b6633ad44e07583ed6ad5620c27ffcbe96c814679e40",
+    "negative/broken_foreign_key/orders.csv": "6a70f3f0d7ea141eca96313e55b95ce077b0e4d7718368bd370caa4c98124e33",
+    "valid/csv/customers.csv": "288bfd4c6f4dba37e001d4e347a42a480bf262397577ed68f292fb56a1277128",
+    "valid/csv/order_items.csv": "6fd8dc958f2748e69102b6633ad44e07583ed6ad5620c27ffcbe96c814679e40",
+    "valid/csv/orders.csv": "8d06f8334a4b11bc24c7d58aa0f9c1c2cd7dc975bab90bfab0bc364c0675e226",
+    "valid/parquet/customers.parquet": "6bf1491db7dfa1259cc091ed12549d05bc190f5eefc34e06cd99eb5d6d6fdb5a",
+    "valid/parquet/order_items.parquet": "8c236887003bac0cf204cfcd8244ae7ffd3873ab5b7495651aa855cea4f560c8",
+    "valid/parquet/orders.parquet": "405650ec9b375a51cb97e868f933c1ae286fc1fdee78f70f81d6fc59eaa270a6"
+  },
+  "fixtureforge_version": "0.1.0",
+  "generation_rules": {
+    "customers": {
+      "country": "metadata_semantic_generator",
+      "customer_id": "sequential_primary_key",
+      "email": "metadata_semantic_generator",
+      "name": "metadata_semantic_generator",
+      "phone": "metadata_semantic_generator",
+      "segment": "metadata_semantic_generator",
+      "signup_date": "metadata_semantic_generator"
+    },
+    "order_items": {
+      "order_id": "foreign_key:orders.order_id",
+      "order_item_id": "sequential_primary_key",
+      "quantity": "metadata_semantic_generator",
+      "sku": "metadata_semantic_generator",
+      "unit_price": "metadata_semantic_generator"
+    },
+    "orders": {
+      "amount": "metadata_semantic_generator",
+      "customer_id": "foreign_key:customers.customer_id",
+      "order_date": "metadata_semantic_generator",
+      "order_id": "sequential_primary_key",
+      "payment_method": "metadata_semantic_generator",
+      "shipping_country": "metadata_semantic_generator",
+      "status": "metadata_semantic_generator"
+    }
+  },
+  "metadata_fingerprint": "1b49d97f2f303a5414e389f73cfd633ea15d3f593331005c1b13a2340b8dfd69",
+  "negative_control_detected": true,
+  "seed": 2026,
+  "source_row_access": "none",
+  "validation_passed": true
+}
