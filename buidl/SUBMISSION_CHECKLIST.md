@@ -24,7 +24,7 @@
 - [x] Add a second independent domain and exact search-scope boundary
 - [x] Replace description mutation with a structured DataHub Context Document
 - [x] Replace the original slideshow video with true live product footage
-- [ ] Update and re-verify Devpost after the final video and PR links
+- [x] Update and re-verify Devpost after the final video and PR links
 
 Submission receipt: https://devpost.com/software/fixtureforge displays
 "Submitted to Build with DataHub: The Agent Hackathon"; the submission manager
