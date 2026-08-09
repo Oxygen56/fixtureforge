@@ -27,7 +27,7 @@
 - [x] Add adversarial schema first-pass and refusal metrics
 - [x] Publish an upstream DataHub Skill contribution PR
 - [x] Replace the original slideshow video with true live product footage
-- [ ] Update and re-verify Devpost after the final video and PR links
+- [x] Update and re-verify Devpost after the final video and PR links
 
 Submission receipt: https://devpost.com/software/fixtureforge displays
 "Submitted to Build with DataHub: The Agent Hackathon"; the submission manager
@@ -36,3 +36,7 @@ shows Submitted and 5/5 steps done.
 Agent-generated delivery: https://github.com/Oxygen56/fixtureforge/pull/1
 
 Current ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
+
+Final live video: https://youtu.be/hZRhNeFJiqA
+
+Clean-room live run: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018

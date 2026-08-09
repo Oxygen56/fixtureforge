@@ -2,8 +2,8 @@
 
 ## One-line pitch
 
-Compile governed DataHub metadata into deterministic, merge-ready test assets
-without reading production source rows.
+Give FixtureForge a goal; it discovers governed DataHub assets and delivers
+deterministic, merge-ready test assets without reading production source rows.
 
 ## Problem
 
@@ -13,37 +13,45 @@ and governance rules.
 
 ## Working solution
 
-FixtureForge reads schemas, keys, lineage, tags, and glossary terms from DataHub
-OSS through the official MCP Server. It produces linked CSV and Parquet fixtures,
-dbt tests, typed Python accessors, validation evidence, and a negative control.
+FixtureForge searches and scopes a DataHub graph through the official MCP
+Server, reads schemas, keys, lineage, tags, and glossary terms, and produces
+linked CSV and Parquet fixtures, dbt tests, typed Python accessors, validation
+evidence, and a negative control. It then creates a reviewable Git change and,
+with approval, writes a verified Context Document back to DataHub.
 
 ## Demo
 
-- Local run: DATAHUB_GMS_URL=http://localhost:8080 make judge
+- Live run: DATAHUB_GMS_URL=http://localhost:18080 make agent-live
+- Recorded replay: make agent-demo
 - Visual report: build/live-demo/evidence-report.html
 - Final live video: build/video/fixtureforge-final-live.mp4 (2:07, 1080p)
 - Public repository: https://github.com/Oxygen56/fixtureforge
 - Public video: https://youtu.be/hZRhNeFJiqA
+- Agent-generated PR: https://github.com/Oxygen56/fixtureforge/pull/1
+- Clean-room live workflow: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
 - Ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 - Submitted Devpost project: https://devpost.com/software/fixtureforge
 - Upstream DataHub Skill contribution: https://github.com/datahub-project/datahub-skills/pull/127
 
 ## Technical architecture
 
-Official MCP metadata is normalized into a strict Pydantic contract. A
-deterministic compiler topologically orders dataset dependencies and selects
-semantic field generators. DuckDB independently validates the outputs. A
-separate localhost-only command writes the evidence fingerprint through MCP and
-performs a read-after-write check.
+The bounded agent interprets a natural-language goal, searches DataHub, expands
+one-hop lineage, enforces exact namespace scope, and normalizes official MCP
+metadata into a strict Pydantic contract. A deterministic compiler orders
+dataset dependencies and selects semantic field generators. DuckDB independently
+validates the outputs. Git delivery is isolated, and approved writeback performs
+a full-fingerprint read-after-write check.
 
 ## Evidence
 
 - Real DataHub OSS v1.6.0 and official mcp-server-datahub
-- 7 metadata-only MCP calls and zero source-row calls
-- 30 of 30 live independent checks passed
+- Search plus lineage discovery selected 3 support datasets and rejected cross-domain matches
+- 30 of 30 independent live checks passed with zero source-row calls
 - 1 intentionally broken foreign key detected
-- 2 independent builds had identical file inventories
-- 27 automated tests, strict type checks, and lint checks passed
+- 2 independent builds were byte-identical
+- Real public agent-generated branch, commit, and pull request
+- Verified DataHub Context Document writeback and full-fingerprint readback
+- 27 tests passed with 91.59 percent overall coverage including the MCP adapter
 - 30,000-row local benchmark completed in 2.2316 seconds
 - 6/6 compatible adversarial schema changes passed on the first attempt
 - 1 invalid relationship refused before generation

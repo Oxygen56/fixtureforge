@@ -34,6 +34,8 @@ the writeback evidence.
 
 Public agent delivery: https://github.com/Oxygen56/fixtureforge/pull/1
 
+Clean-room GitHub Actions run: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
+
 ## Independent second-domain evidence
 
 Retail and support operations have different schemas, governed fields, enum
@@ -74,7 +76,8 @@ These measurements are local evidence, not production throughput or adoption.
 - Agent PR: https://github.com/Oxygen56/fixtureforge/pull/1
 - Ownership and adversarial-evidence PR: https://github.com/Oxygen56/fixtureforge/pull/2
 - Upstream DataHub Skill PR: https://github.com/datahub-project/datahub-skills/pull/127
-- Current video: https://youtu.be/hZRhNeFJiqA
+- Live 2:07 video: https://youtu.be/hZRhNeFJiqA
+- Clean-room live workflow: https://github.com/Oxygen56/fixtureforge/actions/runs/31325742018
 - Submitted project: https://devpost.com/software/fixtureforge
 
 The current evidence proves local operation, public CI, and a reviewable Git
